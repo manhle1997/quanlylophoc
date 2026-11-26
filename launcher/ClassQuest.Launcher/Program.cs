@@ -21,11 +21,22 @@ internal static class Program
     public static int Main(string[] args)
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
+        if (args.Length == 1 && args[0] == "--apply-update")
+        {
+            try { return UpdateInstaller.RunHelper(AppContext.BaseDirectory).GetAwaiter().GetResult(); }
+            catch { return 1; }
+        }
         Console.Title = "Lớp Học Vui";
         // Developer/test override; normal desktop use always keeps the default origin.
         var overridePort = args.FirstOrDefault(a => a.StartsWith("--port=", StringComparison.Ordinal));
         if (overridePort is not null) { if (!int.TryParse(overridePort[7..], out Port) || Port < 1024 || Port > 65535) { Console.Error.WriteLine("Cổng không hợp lệ."); return 2; } }
         var openBrowser = !args.Contains("--no-browser", StringComparer.Ordinal);
+        using (var updating = new Mutex(false, $@"Local\ClassQuest-Update-{Port}-v1"))
+        {
+            bool available; try { available = updating.WaitOne(0); } catch (AbandonedMutexException) { available = true; }
+            if (available) updating.ReleaseMutex();
+            else if (!args.Contains("--update-restart", StringComparer.Ordinal)) { Console.WriteLine("Đang cài bản cập nhật. Hãy chờ ứng dụng mở lại."); return 2; }
+        }
         // Keep Mutex ownership on this synchronous main thread, including release.
         using var instance = new Mutex(false, $@"Local\ClassQuest-Static-{Port}-v1");
         bool owns;
@@ -53,11 +64,11 @@ internal static class Program
 
     private static async Task<int> Run(bool openBrowser)
     {
+        UpdateInstaller.RecoverInterrupted(AppContext.BaseDirectory);
         var root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "app"));
         if (!Directory.Exists(root) || !File.Exists(Path.Combine(root, "index.html")) || HasReparsePoint(root))
             throw new IOException("Thiếu thư mục app hoặc app là liên kết không được hỗ trợ.");
         var builder = WebApplication.CreateSlimBuilder(new WebApplicationOptions { ContentRootPath = AppContext.BaseDirectory, Args = [] });
-        var storageApi = new StorageApi(AppContext.BaseDirectory, Address.TrimEnd('/'));
         builder.Logging.ClearProviders();
         builder.WebHost.ConfigureKestrel(options =>
         {
@@ -66,6 +77,7 @@ internal static class Program
             options.Listen(IPAddress.Loopback, Port, endpoint => endpoint.Protocols = HttpProtocols.Http1);
         });
         await using var app = builder.Build();
+        var storageApi = new StorageApi(AppContext.BaseDirectory, Address.TrimEnd('/'), new UpdateService(AppContext.BaseDirectory, typeof(Program).Assembly.GetName().Version!.ToString(3), Port), app.Lifetime);
         app.Run(async context =>
         {
             context.Response.Headers.XContentTypeOptions = "nosniff";

@@ -86,6 +86,9 @@ main#main-content { padding: 12px 36px 28px; max-width: 1500px; width: 100%; mar
 .app-footer { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 0 36px; border-top: 1px solid var(--line); padding: 16px 0 20px; font-size: .75rem; color: var(--muted); }
 .app-footer > span { display: flex; align-items: center; gap: 7px; }
 .app-footer .icon { width: 14px; height: 14px; }
+.app-footer { flex-wrap: wrap; }
+.app-copyright { margin: 0; line-height: 1.65; }
+.app-copyright strong { font-weight: 600; color: var(--text); }
 .footer-divider { color: #8b978c; margin: 0 4px; }
 .header-actions .compact-utility { display: none; }
 .game-screen .brand-mark { background: #3c3353; color: #eee0ff; border-color: #9785b766; }

@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures.js';
+import { test, expect, captureReview } from './fixtures.js';
 import { createDemo } from '../../src/core/domain/demo.js';
 
 for (const gameId of ['fishing', 'ufo', 'claw', 'marble', 'treasure']) test(`${gameId}: two character lines, safe positions, pause and unchanged result`, async ({ page, storage }) => {
@@ -13,7 +13,7 @@ for (const gameId of ['fishing', 'ufo', 'claw', 'marble', 'treasure']) test(`${g
   expect(doc.classes[0].students.some(s => s.id === firstId)).toBe(true);
   await expect(speech.locator('.speech-name')).toHaveText(doc.classes[0].students.find(s => s.id === firstId).fullName);
   const box = await speech.boundingBox(); expect(box.x).toBeGreaterThanOrEqual(12); expect(box.x + box.width).toBeLessThanOrEqual(1268); expect(box.y).toBeGreaterThanOrEqual(90); expect(box.y + box.height).toBeLessThan(610);
-  await page.locator('.paused-overlay').evaluate(el => { el.style.visibility = 'hidden'; }); await page.screenshot({ path: `docs/screenshots/${gameId}-dialogue.png` }); await page.locator('.paused-overlay').evaluate(el => { el.style.visibility = ''; });
+  await page.locator('.paused-overlay').evaluate(el => { el.style.visibility = 'hidden'; }); await captureReview(page, `${gameId}-dialogue.png`); await page.locator('.paused-overlay').evaluate(el => { el.style.visibility = ''; });
   await expect(speech.locator('.speech-line')).toHaveText(firstLine); expect(storage.document.history).toHaveLength(0);
   await page.getByRole('button', { name: 'Tiếp tục', exact: true }).click();
   await expect(speech).toHaveAttribute('data-hook-index', '1', { timeout: 10000 }); await expect(speech).toBeVisible();
@@ -36,7 +36,7 @@ for (const gameId of ['fishing', 'ufo', 'claw', 'marble', 'treasure']) test(`${g
   expect(await speech.evaluate(el => getComputedStyle(el).animationName)).toBe('none');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await expect(page.getByRole('button', { name: 'Bỏ qua hiệu ứng', exact: true })).toBeInViewport();
-  await page.locator('.paused-overlay').evaluate(el => { el.style.visibility = 'hidden'; }); await page.screenshot({ path: `docs/screenshots/${gameId}-dialogue-390.png` }); await page.locator('.paused-overlay').evaluate(el => { el.style.visibility = ''; });
+  await page.locator('.paused-overlay').evaluate(el => { el.style.visibility = 'hidden'; }); await captureReview(page, `${gameId}-dialogue-390.png`); await page.locator('.paused-overlay').evaluate(el => { el.style.visibility = ''; });
   await page.getByRole('button', { name: 'Bỏ qua hiệu ứng', exact: true }).click(); await expect(speech).toBeHidden();
   expect(storage.document.history).toHaveLength(1);
 });
@@ -48,5 +48,5 @@ for (const [width, height] of [[390, 844], [768, 1024]]) test(`3D speech and con
   const speech = page.locator('.character-speech'); await expect(speech).toBeVisible({ timeout: 10000 }); await page.getByRole('button', { name: 'Tạm dừng', exact: true }).click();
   const box = await speech.boundingBox(), controls = await page.locator('.game-controls').boundingBox();
   expect(box.x).toBeGreaterThanOrEqual(12); expect(box.x + box.width).toBeLessThanOrEqual(width - 12); expect(box.y).toBeGreaterThanOrEqual(90); expect(box.y + box.height).toBeLessThan(controls.y - 8);
-  await page.locator('.paused-overlay').evaluate(el => { el.style.visibility = 'hidden'; }); await page.screenshot({ path: `docs/screenshots/fishing-3d-dialogue-${width}.png` });
+  await page.locator('.paused-overlay').evaluate(el => { el.style.visibility = 'hidden'; }); await captureReview(page, `fishing-3d-dialogue-${width}.png`);
 });

@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { captureReview } from './fixtures.js';
 import fs from 'node:fs/promises';
 import syncFs from 'node:fs';
 import path from 'node:path';
@@ -50,7 +51,7 @@ test('M7: daily attendance, restart, five offline games, backup restore and loss
     await page.getByRole('combobox', { name: 'Điểm danh: Nhân vật giả 2', exact: true }).selectOption('late');
     await expect(page.locator('.save-status')).toHaveText('Đã lưu tự động'); expect((await disk()).attendanceRecords[0].entries).toHaveLength(40);
     await page.getByRole('button', { name: 'Quản lý học sinh', exact: true }).click();
-    await page.screenshot({ path: 'docs/screenshots/teacher-autosave.png', fullPage: true });
+    await captureReview(page, 'teacher-autosave.png', { fullPage: true });
     await stop(child); child = await start(); await page.reload();
     await page.getByRole('button', { name: 'Mở thông tin cá nhân', exact: true }).click();
     await expect(page.getByLabel('Họ và tên', { exact: true })).toHaveValue('Giáo viên minh họa');

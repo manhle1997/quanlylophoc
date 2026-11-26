@@ -1,18 +1,18 @@
-import { test, expect } from './fixtures.js';
+import { test, expect, captureReview } from './fixtures.js';
 test('M3: Fishing visual review, ten rounds and context loss keep a single result', async ({ page }) => {
   test.setTimeout(90000);
   const errors = [], external = [];
   page.on('pageerror', e => errors.push(e.message));
   page.on('request', req => { if (!req.url().startsWith('http://127.0.0.1:4173/')) external.push(req.url()); });
   await page.goto('/'); await page.getByRole('button', { name: 'Chơi thử', exact: true }).click();
-  await page.screenshot({ path: 'docs/screenshots/launcher.png', fullPage: true });
+  await captureReview(page, 'launcher.png', { fullPage: true });
   await page.getByRole('button', { name: 'Bắt đầu gọi' }).click();
   await expect(page.locator('.stage canvas')).toBeVisible();
   await expect(page.locator('.game-loading')).toBeHidden();
   await page.getByRole('button', { name: 'Tạm dừng', exact: true }).click();
   // Pause freezes simulation for a stable image. Hide only pause dialog for the review screenshot.
   await page.locator('.paused-overlay').evaluate(el => { el.style.visibility = 'hidden'; });
-  await page.screenshot({ path: 'docs/screenshots/fishing.png' });
+  await captureReview(page, 'fishing.png');
   await page.locator('.paused-overlay').evaluate(el => { el.style.visibility = ''; });
   const geometryCounts = [];
   for (let i = 0; i < 10; i++) {

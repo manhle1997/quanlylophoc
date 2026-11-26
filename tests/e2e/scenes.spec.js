@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures.js';
+import { test, expect, captureReview } from './fixtures.js';
 test('M5: five distinct scenes, local assets, replay and cleanup', async ({ page }) => {
   test.setTimeout(90000);
   const errors = [], external = [];
@@ -9,7 +9,7 @@ test('M5: five distinct scenes, local assets, replay and cleanup', async ({ page
     await expect(page.locator('.stage canvas')).toBeVisible(); await expect(page.locator('.game-loading')).toBeHidden();
     await page.getByRole('button', { name: 'Tạm dừng', exact: true }).click();
     await page.locator('.paused-overlay').evaluate(el => { el.style.visibility = 'hidden'; });
-    await page.screenshot({ path: `docs/screenshots/${id}.png` });
+    await captureReview(page, `${id}.png`);
     await page.locator('.paused-overlay').evaluate(el => { el.style.visibility = ''; });
     console.info(`${id} drawCalls`, await page.locator('.stage canvas').getAttribute('data-draw-calls'));
     await page.getByRole('button', { name: 'Bỏ qua hiệu ứng', exact: true }).click();

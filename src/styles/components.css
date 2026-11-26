@@ -60,6 +60,15 @@ input[type="range"] { accent-color: var(--accent); }
 .app-opening { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; text-align: center; padding: 30px; }
 .app-opening p { max-width: 650px; line-height: 1.8; }
 .automatic-storage-panel { margin-top: 24px; }
+.updates-panel { margin-bottom: 24px; }
+.update-heading { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+.update-heading h2 { margin-bottom: 8px; }
+.update-heading p { margin: 0; }
+.app-version { font-variant-numeric: tabular-nums; color: var(--text); font-weight: 600; margin-left: 8px; }
+.update-status { margin-top: 20px; line-height: 1.6; }
+.update-note { color: var(--muted); font-size: .8125rem; line-height: 1.6; margin: 8px 0 0; }
+.update-download { display: flex; align-items: center; gap: 12px; margin-top: 12px; font-variant-numeric: tabular-nums; }
+.update-download progress { width: 100%; height: 8px; accent-color: var(--accent); }
 .backup-list { display: grid; gap: 0; margin-top: 24px; }
 .backup-item { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 20px 0; border-bottom: 1px solid var(--line); }
 .backup-item h2 { font-size: .9375rem; }

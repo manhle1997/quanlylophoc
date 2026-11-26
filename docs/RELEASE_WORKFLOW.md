@@ -28,8 +28,8 @@ Không cần cung cấp PAT cho workflow: dùng GITHUB_TOKEN ngắn hạn của 
 
 - Workflow mới cần được commit/push; việc kiểm tra cú pháp tại máy không thay thế một lần chạy thực trên GitHub.
 - Lần chuẩn bị này không dispatch workflow, không đóng gói hoặc tạo bản nháp/release/tag từ máy hiện tại, không thay gói Windows/data đang dùng.
-- Chưa có Updater.exe, chức năng kiểm tra/tải cập nhật trong ứng dụng hoặc chữ ký gói cập nhật. ZIP + checksum hiện phục vụ kiểm tra gói phân phối; không coi checksum là chữ ký xác thực nhà phát hành.
-- Draft và prerelease không được endpoint latest stable trả về. Việc đưa bản nào cho giáo viên nhận cập nhật sẽ được xác định ở bước triển khai updater.
+- Có chức năng kiểm tra/tải/cài trong Cài đặt. Không cần ship Updater.exe riêng: launcher tự sao chép thành helper khi cài. Chưa có chữ ký Authenticode hoặc chữ ký gói độc lập; không coi checksum là chữ ký nhà phát hành.
+- Updater dùng danh sách Releases, nhận bản Publish có version cao nhất (kể cả prerelease được ghi rõ Bản thử nghiệm); bỏ draft, cùng version và downgrade. ZIP phải có digest SHA-256 GitHub hợp lệ. Không chỉ dùng endpoint latest stable vì dự án hiện phát hành RC. Xem [APPLICATION_UPDATES.md](APPLICATION_UPDATES.md).
 - Lần phát hành đầu có updater cần cài/cập nhật thủ công một lần trên máy giáo viên; các lần sau mới có thể cập nhật trong ứng dụng.
 
 CI đã kiểm tra: https://github.com/manhle1997/quanlylophoc/actions/runs/45776699651. Kết quả thực tế trong IMPLEMENTATION_STATUS.md.

@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures.js';
+import { test, expect, captureReview } from './fixtures.js';
 import { createDemo } from '../../src/core/domain/demo.js';
 
 // Keep the selected ID constant while varying only the presentation seed.
@@ -32,7 +32,7 @@ test('all five 3D games avoid pinning the first roster name and reveal the prese
     await expect(page.locator('.actor-label:not([hidden])').filter({ hasText: c.students[0].fullName })).toHaveCount(0);
     if (id === 'fishing') {
       await page.locator('.paused-overlay').evaluate(el => { el.style.visibility = 'hidden'; });
-      await page.screenshot({ path: 'docs/screenshots/label-order-3d.png' });
+      await captureReview(page, 'label-order-3d.png');
       await page.locator('.paused-overlay').evaluate(el => { el.style.visibility = ''; });
     }
     await page.getByRole('button', { name: 'Bỏ qua hiệu ứng', exact: true }).click();
@@ -54,7 +54,7 @@ test('2D bubbles vary between rounds and retain the same order after 3D context 
   expect(first).toHaveLength(12); expect(first[0]).toBe(c.students[21].fullName); expect(first).not.toContain(c.students[0].fullName);
   await page.getByRole('button', { name: 'Tạm dừng', exact: true }).click();
   await page.locator('.paused-overlay').evaluate(el => { el.style.visibility = 'hidden'; });
-  await page.screenshot({ path: 'docs/screenshots/label-order-2d.png' });
+  await captureReview(page, 'label-order-2d.png');
   await page.locator('.paused-overlay').evaluate(el => { el.style.visibility = ''; });
   await page.getByRole('button', { name: 'Bỏ qua hiệu ứng', exact: true }).click();
   await expect(page.locator('.result-title')).toHaveText(c.students[17].fullName);

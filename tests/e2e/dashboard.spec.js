@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures.js';
+import { test, expect, captureReview } from './fixtures.js';
 import { createDemo } from '../../src/core/domain/demo.js';
 import { setAttendanceStatus, todayKey } from '../../src/core/domain/attendance-service.js';
 
@@ -22,12 +22,12 @@ for (const [width, height] of [[1440, 960], [768, 1024], [390, 844]]) {
       await page.getByRole('combobox', { name: 'Lớp đang làm việc', exact: true }).selectOption(c.id);
       await expect(page.locator('.roster-table tbody tr')).toHaveCount(40);
     }
-    await page.screenshot({ path: `docs/screenshots/dashboard-${width}.png` });
+    await captureReview(page, `dashboard-${width}.png`);
     const nav = page.getByRole('navigation', { name: 'Điều hướng chính' });
     await nav.getByRole('button', { name: 'Điểm danh', exact: true }).click();
     await expect(page.locator('.attendance-stat.present strong')).toHaveText('37');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-    await page.screenshot({ path: `docs/screenshots/attendance-design-${width}.png` });
+    await captureReview(page, `attendance-design-${width}.png`);
     await nav.getByRole('button', { name: 'Gọi lên bảng', exact: true }).click();
     await page.locator('[data-game=treasure]').click();
     await expect(page.locator('[data-game=treasure]')).toHaveAttribute('aria-pressed', 'true');
@@ -35,7 +35,7 @@ for (const [width, height] of [[1440, 960], [768, 1024], [390, 844]]) {
     await expect(page.locator('.launch-summary p strong')).toHaveText('38 học sinh');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
     await page.evaluate(() => window.scrollTo(0, 0));
-    await page.screenshot({ path: `docs/screenshots/calling-design-${width}.png` });
+    await captureReview(page, `calling-design-${width}.png`);
   });
 }
 

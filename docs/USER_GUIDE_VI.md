@@ -53,9 +53,13 @@ Lịch sử và Cài đặt nằm ở mục Tiện ích; trên màn hình nhỏ 
 
 ## Chơi thử
 
-**Chơi thử** dùng danh sách minh họa. Mọi thay đổi trong chế độ này không ảnh hưởng lớp học thật. Bấm **Về lớp của tôi** để trở lại.
+**Chơi thử** dùng danh sách minh họa, không ghi danh sách này vào lớp học thật. Bấm **Quản lý học sinh** hoặc **Về lớp của tôi** để tự thoát chơi thử, mở lại dữ liệu đã lưu và tạo lớp/thêm học sinh như bình thường. Nếu chưa có lớp, ứng dụng hiện **Tạo lớp đầu tiên**; lớp và học sinh mới được lưu tự động.
 
 ## Sẵn sàng cả khi offline
+
+Để nhận bản mới khi có Internet: **Cài đặt → Phiên bản ứng dụng → Kiểm tra cập nhật → Tải bản mới → Cài đặt và mở lại**. Ứng dụng lưu thay đổi trước khi cài, giữ nguyên lớp học, hồ sơ, ảnh và backup. Có thể hủy trước khi cài. Bản thử nghiệm được ghi rõ để bạn nhận biết. Nếu không có bản mới hoặc mất mạng, tiếp tục dùng lớp học bình thường.
+
+Các bản cũ chưa có nút cập nhật cần được người hỗ trợ nâng cấp thủ công một lần, giữ nguyên dữ liệu đang có.
 
 Ứng dụng không cần Internet, tài khoản, Node.js hoặc cài .NET riêng. Gói hiện tại dành cho Windows x64 phù hợp và dùng trình duyệt sẵn trên máy.
 

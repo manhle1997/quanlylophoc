@@ -2,7 +2,7 @@
 
 ## Runtime và dữ liệu
 
-- Ứng dụng Windows offline: HTML/CSS, Vanilla JavaScript ES modules, Vite, Three.js, GSAP; không CDN, telemetry hoặc dịch vụ từ xa.
+- Chức năng lớp học Windows offline: HTML/CSS, Vanilla JavaScript ES modules, Vite, Three.js, GSAP; không CDN, telemetry hoặc asset từ xa. Ngoại lệ được yêu cầu: kiểm tra/tải cập nhật từ GitHub khi giáo viên bấm nút, không tự kết nối nền.
 - Launcher .NET self-contained chỉ bind loopback, phục vụ app và cầu nối snapshot/backup nội bộ. Kiểm tra Host/Origin/token; không phục vụ data/ hoặc nhận đường dẫn file từ client.
 - JSON là nguồn dữ liệu chính. Tự đọc khi mở, tự lưu sau mutation, backup trước overwrite, ghi nguyên tử, xác minh bytes và kiểm tra CAS/ETag. Xung đột hoặc lỗi giữ dữ liệu đang làm và bản đã lưu. Xem [AUTOMATIC_STORAGE](AUTOMATIC_STORAGE.md).
 - Schema v2 lưu điểm danh theo lớp/ngày và đọc schema v1 không mất IDs, lịch sử hoặc vòng. Logic tương thích dữ liệu tiếp tục được giữ dù gói ứng dụng cũ được dọn. Xem [DAILY_ATTENDANCE](DAILY_ATTENDANCE.md).
@@ -22,6 +22,8 @@
 Ba phân hệ chính: Quản lý học sinh, Điểm danh, Gọi lên bảng. Thông tin cá nhân/Lịch sử/Cài đặt/Sao lưu là tiện ích phụ. Dashboard theo hướng Sổ lớp số; cho đổi màu chủ đạo, tên/ảnh/logo theo giáo viên; scene có palette riêng. Xem [DESIGN_DIRECTION](DESIGN_DIRECTION.md).
 
 ## Hoàn tất và dọn phiên bản
+
+Cập nhật tại máy giáo viên được launcher thực hiện qua API loopback có Host/Origin/token như persistence. Frontend chỉ gửi thao tác check/download/cancel/apply, không gửi URL, đường dẫn hay dữ liệu lớp ra Internet. Launcher chọn gói của repository cố định, kiểm tra SHA-256 từ GitHub API, giải nén có giới hạn và danh sách entry cho phép. Một bản sao launcher chạy chế độ helper từ `.updates/<id>/Updater.exe`, chờ tiến trình cũ thoát rồi thay program entries tại chỗ. Không cần thêm runtime hoặc SDK. Có journal/backup chương trình, rollback khi lỗi và kiểm tra session/version sau restart; `data/` giữ nguyên toàn bộ. Xem [APPLICATION_UPDATES](APPLICATION_UPDATES.md).
 
 Chỉ khi người dùng yêu cầu rõ, sau build/test mới packaging: tái sử dụng thư mục phát hành, đổi tên thư mục và ZIP hiện có theo version mới rồi thay nội dung chương trình/ZIP/checksum. Không tạo thư mục version song song. Lần phát hành đầu trong workspace trống mới tạo thư mục. Trong giai đoạn phát triển giữ nguyên gói đang dùng, chỉ build/test/review. Dọn fixture và tài liệu lỗi thời, bảo toàn dữ liệu.
 

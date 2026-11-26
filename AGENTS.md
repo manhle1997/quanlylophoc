@@ -1,6 +1,6 @@
 # Lớp Học Vui (tên cũ ClassQuest)
 
-- Runtime phải offline hoàn toàn; không CDN, telemetry, remote asset hay dịch vụ từ xa.
+- Các chức năng lớp học phải offline hoàn toàn; không CDN, telemetry, remote asset. Ngoại lệ do người dùng yêu cầu 2026-11-26: cập nhật phiên bản kết nối GitHub Releases của dự án khi người dùng bấm kiểm tra/tải; không tự kiểm tra nền hoặc gửi dữ liệu giáo viên/lớp học ra ngoài.
 - Stack: HTML/CSS, Vanilla JavaScript ES modules, Vite, Three.js, GSAP.
 - Ba phân hệ chính: Quản lý học sinh, Điểm danh, Gọi lên bảng. Lịch sử/Cài đặt là tiện ích phụ. Tên hiển thị bằng tiếng Việt.
 - Điểm danh lưu theo lớp/ngày trong schema v2, tự đọc schema v1. Gọi lên bảng chỉ loại học sinh vắng của hôm nay, không lấy ngày lịch sử đang xem. Không xóa dữ liệu khi nâng cấp.
@@ -17,6 +17,7 @@
 - Launcher chỉ bind loopback; ngoại lệ được người dùng cho phép là API lưu snapshot/backup nội bộ. Kiểm tra Host/Origin/token, không expose đường dẫn data/ dưới dạng static, không nhận đường dẫn file từ client.
 - Theo yêu cầu người dùng 2026-11-26: chỉ đóng gói/phát hành khi người dùng yêu cầu rõ. Trong lúc phát triển chỉ build/test/review; không tự chạy package:release, đổi tên thư mục/ZIP phát hành hoặc dừng ứng dụng đang dùng để cập nhật gói. Khi được yêu cầu đóng gói, áp dụng các quy tắc bảo toàn data và tái sử dụng thư mục ở trên.
 - Theo yêu cầu người dùng 2026-11-26: lint/test chức năng chạy tại local trước khi push. GitHub CI chỉ build; workflow phát hành không chạy lại unit/E2E/native test hoặc cài Playwright. Giữ kiểm tra version, tên gói, checksum và đối chiếu ZIP với build; việc đóng gói vẫn cần yêu cầu thủ công.
+- Theo phản hồi người dùng 2026-11-26: không tự ghi hàng loạt ảnh kiểm thử vào docs hoặc Git. Test mặc định chỉ giữ ảnh lỗi trong test-results/ đã ignore; ảnh review chỉ chụp khi cần, bật REVIEW_SCREENSHOTS=1, lưu tạm trong test-results/ và dọn sau khi xem. Không xóa ảnh/avatar/logo trong data/ hoặc asset chạy ứng dụng.
 
 <!-- postman-cli:installation:start -->
 Postman CLI is installed on this device, and can be used for API Engineering work.

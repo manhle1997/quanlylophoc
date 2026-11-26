@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures.js';
+import { test, expect, captureReview } from './fixtures.js';
 import { createDemo } from '../../src/core/domain/demo.js';
 import { todayKey, setAttendanceStatus } from '../../src/core/domain/attendance-service.js';
 
@@ -21,9 +21,9 @@ test('three main modules, Vietnamese identity and daily attendance survive reloa
   await page.getByRole('button', { name: 'Ghi nhận cả lớp có mặt', exact: true }).click(); await expect(page.locator('.save-status')).toHaveText('Đã lưu tự động');
   await nav.getByRole('button', { name: 'Gọi lên bảng', exact: true }).click(); await expect(page.locator('.launch-summary p strong')).toHaveText('38 học sinh');
   await expect(page.locator('.game-card')).toHaveCount(5); expect(storage.document.attendanceRecords).toHaveLength(2);
-  await page.screenshot({ path: 'docs/screenshots/goi-len-bang.png' });
+  await captureReview(page, 'goi-len-bang.png');
   await nav.getByRole('button', { name: 'Điểm danh', exact: true }).click(); await page.getByRole('button', { name: 'Hôm nay', exact: true }).click();
-  await page.screenshot({ path: 'docs/screenshots/diem-danh.png' });
+  await captureReview(page, 'diem-danh.png');
 });
 
 test('an empty installation exposes three modules and needs no file or folder actions', async ({ page }) => {

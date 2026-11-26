@@ -1,9 +1,68 @@
-import { test, expect } from './fixtures.js';
+import { test, expect, captureReview } from './fixtures.js';
+import { createDocument } from '../../src/core/domain/schema.js';
+import { upsertClass, addStudents } from '../../src/core/domain/roster-service.js';
+
+for (const width of [390, 1440]) test(`first launch: create a saved class and student after playing the demo at ${width}px`, async ({ page, storage }) => {
+  await page.setViewportSize({ width, height: 900 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Chơi thử', exact: true }).click();
+  await expect(page.locator('.save-status')).toHaveText('Đang chơi thử');
+  await page.getByRole('button', { name: 'Quản lý học sinh', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Tạo lớp đầu tiên', exact: true })).toBeVisible();
+  expect(storage.writes).toBe(0);
+  await page.getByRole('button', { name: 'Tạo lớp đầu tiên', exact: true }).click();
+  await page.getByLabel('Tên lớp', { exact: true }).fill('Lớp minh họa mới');
+  await page.getByRole('dialog').getByRole('button', { name: 'Tạo lớp', exact: true }).click();
+  await page.getByRole('button', { name: 'Thêm học sinh', exact: true }).click();
+  await page.getByLabel('Họ và tên', { exact: true }).fill('Nhân vật minh họa mới');
+  await page.getByRole('button', { name: 'Thêm vào lớp', exact: true }).click();
+  await expect(page.locator('.save-status')).toHaveText('Đã lưu tự động');
+  expect(storage.document.classes).toHaveLength(1);
+  expect(storage.document.classes[0].students.map(s => s.fullName)).toEqual(['Nhân vật minh họa mới']);
+  const saved = structuredClone(storage.document);
+  await page.reload();
+  await expect(page.locator('.roster-class-title h2')).toHaveText('Lớp minh họa mới');
+  await expect(page.locator('.student-name')).toHaveText('Nhân vật minh họa mới');
+  expect(storage.document).toEqual(saved);
+  await expect(page.getByRole('button', { name: 'Về lớp của tôi', exact: true })).toHaveCount(0);
+  await captureReview(page, 'classroom-after-demo.png');
+});
+
+test('leaving demo reloads classroom changes saved by another window', async ({ page, storage }) => {
+  await page.goto('/'); await page.getByRole('button', { name: 'Chơi thử', exact: true }).click();
+  const stored = createDocument();
+  const id = upsertClass(stored, { name: 'Lớp minh họa đã lưu' });
+  addStudents(stored, id, ['Nhân vật minh họa đã lưu']);
+  storage.document = structuredClone(stored); storage.etag = 'other-window';
+  await page.getByRole('button', { name: 'Quản lý học sinh', exact: true }).click();
+  await expect(page.locator('.roster-class-title h2')).toHaveText('Lớp minh họa đã lưu');
+  expect(storage.writes).toBe(0); expect(storage.document).toEqual(stored);
+  await page.getByRole('button', { name: 'Thêm học sinh', exact: true }).click();
+  await page.getByLabel('Họ và tên', { exact: true }).fill('Nhân vật minh họa thêm');
+  await page.getByRole('button', { name: 'Thêm vào lớp', exact: true }).click();
+  await expect(page.locator('.save-status')).toHaveText('Đã lưu tự động');
+  expect(storage.document.classes).toHaveLength(1);
+  expect(storage.document.classes[0].id).toBe(id);
+  expect(storage.document.classes[0].students).toHaveLength(2);
+});
+test('a load error while leaving demo cannot replace saved data with an empty classroom', async ({ page, storage }) => {
+  await page.goto('/'); await page.getByRole('button', { name: 'Chơi thử', exact: true }).click();
+  storage.loadError = 'FUTURE_SCHEMA';
+  await page.getByRole('button', { name: 'Quản lý học sinh', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Chưa mở được lớp học', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Tạo lớp đầu tiên', exact: true })).toHaveCount(0);
+  expect(storage.writes).toBe(0); expect(storage.document).toBeNull();
+  storage.loadError = null;
+  await page.getByRole('button', { name: 'Thử lại', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Tạo lớp đầu tiên', exact: true })).toBeVisible();
+  await expect(page.locator('.save-status')).toHaveText('Đã lưu tự động');
+});
+
 test('roster: create class, paste preview, preserve duplicate IDs and session attendance', async ({ page }) => {
   const errors = []; page.on('pageerror', e => errors.push(e.message));
   await page.goto('/'); await page.getByRole('button', { name: 'Chơi thử', exact: true }).click();
-  await page.getByRole('button', { name: 'Quản lý học sinh' }).click();
-  await page.getByRole('button', { name: 'Tạo lớp', exact: true }).click();
+  await page.getByRole('button', { name: 'Về lớp của tôi', exact: true }).click();
+  await page.getByRole('button', { name: 'Tạo lớp đầu tiên', exact: true }).click();
   await page.getByLabel('Tên lớp', { exact: true }).fill('Lớp kiểm thử giả');
   await page.getByRole('dialog').getByRole('button', { name: 'Tạo lớp', exact: true }).click();
   await page.getByRole('button', { name: 'Nhập hàng loạt' }).click();
@@ -16,6 +75,10 @@ test('roster: create class, paste preview, preserve duplicate IDs and session at
   await expect(page.getByText('Mây Trùng Tên (01)', { exact: true })).toBeVisible();
   await expect(page.getByText('Mây Trùng Tên (02)', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Trạng thái học tập: Mây Trùng Tên (01)', exact: true }).click();
-  await expect(page.locator('.save-status')).toHaveText('Đang chơi thử');
+  await expect(page.locator('.save-status')).toHaveText('Đã lưu tự động');
+  await page.reload();
+  await expect(page.locator('.roster-table tbody tr')).toHaveCount(40);
+  await expect(page.getByText('Mây Trùng Tên (01)', { exact: true })).toBeVisible();
+  await expect(page.getByText('Mây Trùng Tên (02)', { exact: true })).toBeVisible();
   expect(errors).toEqual([]);
 });

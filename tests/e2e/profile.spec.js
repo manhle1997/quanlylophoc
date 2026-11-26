@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures.js';
+import { test, expect, captureReview } from './fixtures.js';
 import { createDemo } from '../../src/core/domain/demo.js';
 import { DEFAULT_PROFILE } from '../../src/core/profile/profile-service.js';
 
@@ -31,7 +31,7 @@ for (const [width, height] of [[1440, 960], [768, 1024], [390, 844]]) {
     await expect(page.getByRole('button', { name: 'Xanh biển', exact: true })).toHaveAttribute('aria-pressed', 'true');
     expect(await page.locator('.profile-image-preview img').evaluateAll(images => images.length === 2 && images.every(i => i.complete && i.naturalWidth > 0))).toBe(true);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await page.screenshot({ path: `docs/screenshots/profile-${width}.png`, fullPage: true });
+    await captureReview(page, `profile-${width}.png`, { fullPage: true });
     await page.locator('[data-remove-profile-image="avatar"]').click();
     await expect(page.locator('.profile-image-preview[data-profile-image="avatar"] img')).toHaveCount(0);
     await expect(page.locator('[data-profile-status]')).toHaveText('Hồ sơ được lưu tự động');

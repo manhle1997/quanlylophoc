@@ -91,7 +91,7 @@ jobs:
             "Lớp Học Vui ${RELEASE_VERSION} — Windows x64 release candidate." \
             'Gói đã build và đối chiếu nội dung ZIP với build. Kiểm thử chức năng được thực hiện tại local trước khi push.' \
             'Không chứa dữ liệu lớp, hồ sơ, ảnh hoặc backup của người dùng.' \
-            'Giữ nguyên data/ khi nâng cấp. Chưa có chức năng tự cập nhật trong ứng dụng.' \
+            'Có cập nhật trong Cài đặt: kiểm tra, tải, cài đặt và mở lại; giữ nguyên data/ khi nâng cấp.' \
             'Đây là bản nháp. Chỉ công bố sau khi người phụ trách kiểm tra và chọn Publish release.' \
             > release-notes.txt
           gh release create "$RELEASE_TAG" \

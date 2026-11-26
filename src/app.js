@@ -27,11 +27,14 @@ import { ProfileService } from './core/profile/profile-service.js';
 import { applyTheme } from './core/profile/theme.js';
 import { profileView, profileImage } from './ui/views/profile.js';
 import { bindProfile } from './ui/controllers/profile.js';
+import { UpdateClient } from './core/updates/update-client.js';
+import { renderUpdates } from './ui/controllers/updates.js';
 
 export class App {
   constructor(root) {
     this.root = root; this.store = new Store(); this.storage = new LocalStorageClient(); this.audio = new AudioService(); this.loading = true;
     this.profile = new ProfileService(this.storage, () => this.updateProfile());
+    this.updates = new UpdateClient(this.storage, () => renderUpdates(this));
     this.autosave = new AutosaveService(this.store, this.storage, { onStatus: () => this.updateSaveStatus() });
     this.page = 'classes'; this.gameId = 'fishing'; this.force2d = false;
     this.manager = new GameManager({
@@ -60,6 +63,11 @@ export class App {
       if (!this.profile.ready) await this.profile.load(doc?.schoolName ?? '');
       this.loading = false; this.autosave.enabled = true; this.autosave.setState('ready'); this.page = 'classes'; this.store.replace(doc ?? createDocument());
     } catch (error) { this.loading = false; this.bootError = error; this.render(); }
+  }
+  async openPage(page) {
+    // Classroom management always edits the saved roster, even after trying a game.
+    if (page === 'classes' && this.store.demo) { await this.loadClasses(); return; }
+    this.page = page; this.render();
   }
   async loadGame(id, context) {
     if (this.force2d) return (await import('./games/fallback/index.js')).createFallback(context);
@@ -130,7 +138,7 @@ export class App {
         <div class="sidebar-utilities"><div class="nav-caption utilities-caption">Tiện ích</div><button class="nav-item ${this.page === 'profile' ? 'active' : ''}" data-page="profile" aria-label="Thông tin cá nhân">${icon('user')}<span>Thông tin cá nhân</span></button><button class="nav-item ${this.page === 'history' ? 'active' : ''}" data-page="history" aria-label="Lịch sử">${icon('clock')}<span>Lịch sử gọi tên</span></button><button class="nav-item ${this.page === 'settings' ? 'active' : ''}" data-page="settings" aria-label="Cài đặt">${icon('settings')}<span>Cài đặt</span></button></div>
         <div class="sidebar-bottom"><div class="offline-card">${icon('shield')}<div><strong>Làm việc ngoại tuyến</strong><p>Lớp học được lưu tự động.</p></div></div><button class="nav-item" data-action="help">${icon('help')}<span>Hướng dẫn sử dụng</span></button><button class="profile" data-page="profile" aria-label="Mở hồ sơ giáo viên"><span class="avatar" data-profile-image="avatar">${profileImage(this.profile, 'avatar')}</span><div><strong data-profile-name>Không gian giáo viên</strong><small data-profile-school-detail>Dữ liệu riêng trên thiết bị</small></div></button></div>
       </aside><div class="workspace"><header class="topbar"><div class="breadcrumb"><span data-profile-name>Không gian giáo viên</span><span class="breadcrumb-divider">/</span><strong>${pageTitle}</strong></div><div class="header-actions"><span class="save-status" aria-live="polite">${this.statusText()}</span>${this.store.demo ? '<button class="button compact secondary" data-action="my-classes">Về lớp của tôi</button>' : ''}<button class="icon-button compact-utility" data-page="settings" aria-label="Cài đặt">${icon('settings')}</button><button class="icon-button header-profile" data-page="profile" aria-label="Mở thông tin cá nhân" title="Thông tin cá nhân" data-profile-image="avatar">${profileImage(this.profile, 'avatar')}</button><button class="icon-button" data-action="mute" aria-label="Bật/tắt âm thanh" title="Bật/tắt âm thanh">${icon(this.store.document.settings.soundEnabled ? 'volume' : 'mute')}</button></div></header>
-        <div class="workspace-date">${esc(currentDate)}</div><main id="main-content" tabindex="-1">${this.pageContent()}</main><footer class="app-footer"><span>Lớp Học Vui <span class="footer-divider">/</span> Sổ lớp số</span><span>${icon('shield')} Hoạt động trên thiết bị · Không cần Internet</span></footer>
+        <div class="workspace-date">${esc(currentDate)}</div><main id="main-content" tabindex="-1">${this.pageContent()}</main><footer class="app-footer"><span>Lớp Học Vui <span class="footer-divider">/</span> Sổ lớp số</span><p class="app-copyright">Sản phẩm của <strong>July Tech's Team</strong>. Mọi quyền được bảo lưu</p></footer>
       </div></div>`;
     if (this.page === 'home') {
       this.root.querySelector('.page-heading .pill')?.remove();
@@ -142,12 +150,13 @@ export class App {
       if (this.store.selectedClass && !attendanceRecord(this.store.document, this.store.selectedClassId, todayKey())) this.root.querySelector('.class-bar').insertAdjacentHTML('afterend', '<p class="call-attendance-note">Chưa ghi nhận điểm danh hôm nay. Hiện dùng tất cả học sinh đang học của lớp.</p>');
       if (!this.store.selectedClass) {
         this.root.querySelector('#main-content').insertAdjacentHTML('afterbegin', '<div class="round-message">Chưa có lớp học. Tạo lớp và thêm danh sách để bắt đầu.<button class="button primary compact" data-create-first>Tạo lớp đầu tiên</button></div>');
-        this.root.querySelector('[data-create-first]').addEventListener('click', () => { this.page = 'classes'; this.render(); rosterAction(this, 'add-class'); });
+        this.root.querySelector('[data-create-first]').addEventListener('click', () => this.action('create-first-class'));
       } else if (!this.pool().length) {
         this.root.querySelector('.launch-bar').insertAdjacentHTML('beforebegin', '<div class="round-message">Không còn học sinh hợp lệ trong vòng hiện tại. Kiểm tra điểm danh hoặc tạo vòng mới.<button class="button secondary compact" data-action="reset-round">Tạo vòng mới</button></div>');
       }
     }
     if (this.page === 'settings') this.root.querySelector('#main-content').insertAdjacentHTML('beforeend', '<section class="panel automatic-storage-panel"><h2>Lớp học luôn được lưu tự động</h2><p>Lớp Học Vui tự nhớ danh sách lớp, học sinh, điểm danh và lịch sử. Nếu cần trở về một thời điểm trước đó, hãy xem các bản lưu an toàn.</p><div class="row-actions"><button class="button secondary" data-action="show-backups">Xem các lần lưu trước</button><button class="button secondary" data-page="history">Lịch sử gọi tên</button><button class="button secondary" data-page="profile">Thông tin cá nhân</button></div></section>');
+    if (this.page === 'settings') this.root.querySelector('.data-grid').insertAdjacentHTML('beforebegin', '<section class="panel updates-panel" data-updates aria-labelledby="updates-title"></section>');
     this.bind();
     this.updateProfile();
     if (this.renderedPage !== this.page) { window.scrollTo(0, 0); this.renderedPage = this.page; }
@@ -166,7 +175,9 @@ export class App {
     bindAttendance(this);
     bindBackups(this);
     bindProfile(this);
-    this.root.querySelectorAll('[data-page]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); this.page = el.dataset.page; this.render(); }));
+    renderUpdates(this);
+    if (this.page === 'settings') this.updates.load();
+    this.root.querySelectorAll('[data-page]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); this.openPage(el.dataset.page).catch(error => notify(error.message)); }));
     this.root.querySelectorAll('[data-game]').forEach(el => el.addEventListener('click', () => { this.gameId = el.dataset.game; this.render(); }));
     this.root.querySelectorAll('[data-action]').forEach(el => el.addEventListener('click', () => this.action(el.dataset.action)));
     this.root.querySelector('#class-select')?.addEventListener('change', e => { this.store.selectedClassId = e.target.value; this.render(); });
@@ -239,7 +250,11 @@ export class App {
   async action(action) {
     try {
       if (action === 'start') { await this.start(); return; }
-      if (action === 'create-first-class') { this.page = 'classes'; this.render(); rosterAction(this, 'add-class'); return; }
+      if (action === 'create-first-class') {
+        await this.openPage('classes');
+        if (!this.bootError) { this.root.querySelector('[data-action="create-first-class"], [data-action="add-class"]')?.focus(); rosterAction(this, 'add-class'); }
+        return;
+      }
       if (action === 'surprise') { this.gameId = GAME_IDS[randomInt(GAME_IDS.length)]; this.render(); notify(`Đã chọn ${getGame(this.gameId).name}. Bấm Bắt đầu khi lớp đã sẵn sàng.`); return; }
       if (action === 'skip') { this.manager.skip(); return; }
       if (action === 'pause') { this.manager.pause(); return; }
@@ -250,7 +265,7 @@ export class App {
       if (attendanceAction(this, action)) return;
       if (rosterAction(this, action)) return;
       if (await dataAction(this, action)) return;
-      if (action === 'demo') { this.autosave.enabled = false; this.page = 'home'; this.updateSaveStatus(); this.store.replace(createDemo(), { demo: true }); }
+      if (action === 'demo') { await this.autosave.flush(); this.autosave.enabled = false; this.page = 'home'; this.updateSaveStatus(); this.store.replace(createDemo(), { demo: true }); }
       else if (action === 'mute') { if (this.store.document) this.store.mutate(doc => { doc.settings.soundEnabled = !doc.settings.soundEnabled; }); }
       else if (action === 'fullscreen') { try { if (document.fullscreenElement) await document.exitFullscreen(); else await document.documentElement.requestFullscreen(); } catch { notify('Trình duyệt chưa cho phép toàn màn hình.'); } }
       else if (action === 'clear-history') dialog({ title: 'Xóa lịch sử gọi tên?', danger: true, confirm: 'Xóa lịch sử', body: '<p>Xóa toàn bộ lịch sử. Các vòng không trùng hiện tại vẫn được giữ, không ảnh hưởng cơ hội của học sinh. Lớp Học Vui tự lưu thay đổi và giữ một bản an toàn trước đó.</p>', onConfirm: () => this.store.mutate(doc => { doc.history = []; }) });

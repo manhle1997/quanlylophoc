@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures.js';
+import { test, expect, captureReview } from './fixtures.js';
 import { createDemo } from '../../src/core/domain/demo.js';
 test('M3: 80 actors, long Vietnamese name, hook label and measured render counters', async ({ page, storage }) => {
   test.setTimeout(60000);
@@ -17,5 +17,5 @@ test('M3: 80 actors, long Vietnamese name, hook label and measured render counte
   console.info('Fishing 80 low measured on dev Chromium:', JSON.stringify(metrics));
   expect(metrics.drawCalls).toBeLessThan(150);
   await page.getByRole('button', { name: 'Bỏ qua hiệu ứng', exact: true }).click(); await expect(page.locator('.result-title')).not.toBeEmpty();
-  await page.screenshot({ path: 'docs/screenshots/fishing80-result.png' });
+  await captureReview(page, 'fishing80-result.png');
 });

@@ -8,6 +8,8 @@ test-results/
 playwright-report/
 launcher/**/bin/
 launcher/**/obj/
+tests/launcher-updates/bin/
+tests/launcher-updates/obj/
 *.user
 .env*
 .cache/

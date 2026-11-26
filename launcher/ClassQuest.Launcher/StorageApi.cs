@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-internal sealed class StorageApi(string baseDirectory, string allowedOrigin)
+internal sealed class StorageApi(string baseDirectory, string allowedOrigin, UpdateService updates, IHostApplicationLifetime lifetime)
 {
     private readonly LocalDataStore store = new(baseDirectory);
     private readonly ProfileStore profileStore = new(baseDirectory);
@@ -21,7 +21,16 @@ internal sealed class StorageApi(string baseDirectory, string allowedOrigin)
         {
             object result;
             if (path.StartsWith("/api/profile/images/", StringComparison.Ordinal) && HttpMethods.IsGet(context.Request.Method)) { await profileStore.SendImage(context, path[20..]); return; }
-            if (path == "/api/profile/images" && HttpMethods.IsPost(context.Request.Method)) result = await profileStore.Upload(context.Request);
+            if (path == "/api/updates" && HttpMethods.IsGet(context.Request.Method)) result = updates.Status;
+            else if (path == "/api/updates/check" && HttpMethods.IsPost(context.Request.Method)) result = updates.Start(false);
+            else if (path == "/api/updates/download" && HttpMethods.IsPost(context.Request.Method)) result = updates.Start(true);
+            else if (path == "/api/updates/cancel" && HttpMethods.IsPost(context.Request.Method)) result = updates.Cancel();
+            else if (path == "/api/updates/apply" && HttpMethods.IsPost(context.Request.Method))
+            {
+                result = updates.Apply();
+                context.Response.OnCompleted(() => { lifetime.StopApplication(); return Task.CompletedTask; });
+            }
+            else if (path == "/api/profile/images" && HttpMethods.IsPost(context.Request.Method)) result = await profileStore.Upload(context.Request);
             else if (path == "/api/profile" && HttpMethods.IsGet(context.Request.Method)) result = await profileStore.Load();
             else if (path == "/api/profile" && HttpMethods.IsPost(context.Request.Method))
             {
@@ -49,7 +58,10 @@ internal sealed class StorageApi(string baseDirectory, string allowedOrigin)
         }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException)
         {
-            context.Response.StatusCode = 503; await context.Response.WriteAsJsonAsync(new { code = "STORAGE_UNAVAILABLE", message = "Chưa lưu được thay đổi. Giữ ứng dụng mở, kiểm tra thiết bị đang dùng rồi thử lại." });
+            context.Response.StatusCode = 503;
+            await context.Response.WriteAsJsonAsync(path.StartsWith("/api/updates", StringComparison.Ordinal)
+                ? new { code = "UPDATE_UNAVAILABLE", message = "Chưa cài được bản cập nhật. Giữ ứng dụng mở, kiểm tra quyền ghi và dung lượng thiết bị rồi thử lại." }
+                : new { code = "STORAGE_UNAVAILABLE", message = "Chưa lưu được thay đổi. Giữ ứng dụng mở, kiểm tra thiết bị đang dùng rồi thử lại." });
         }
         catch (Exception error) when (error is JsonException or InvalidOperationException or FormatException)
         {

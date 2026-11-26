@@ -10,6 +10,16 @@ export const test = base.extend({
       const reply = (json, status = 200) => route.fulfill({ status, json });
       if (url.pathname === '/api/session') return reply({ token: 'fixture-token', version: '0.5.1' });
       if (route.request().headers()['x-classquest-token'] !== 'fixture-token') return reply({ code: 'SESSION_EXPIRED', message: 'Phiên đã đổi.' }, 403);
+      if (url.pathname.startsWith('/api/updates')) {
+        storage.updateRequests ??= [];
+        storage.updateRequests.push({ path: url.pathname, method });
+        storage.updateStatus ??= { state: 'idle', currentVersion: '0.5.1' };
+        if (url.pathname === '/api/updates/check') storage.updateStatus = storage.updateError ? { state: 'error', currentVersion: '0.5.1', message: 'Chưa cập nhật được. Kiểm tra kết nối Internet và thử lại.' } : { state: 'available', currentVersion: '0.5.1', version: '0.5.2', prerelease: true };
+        if (url.pathname === '/api/updates/download') storage.updateStatus = { ...storage.updateStatus, state: 'ready' };
+        if (url.pathname === '/api/updates/cancel') storage.updateStatus = { ...storage.updateStatus, state: 'available' };
+        if (url.pathname === '/api/updates/apply') return reply({ code: 'UPDATE_FIXTURE', message: 'Kiểm thử không khởi động lại máy.' }, 503);
+        return reply(storage.updateStatus);
+      }
       if (url.pathname === '/api/profile' && method === 'GET') return reply({ profile: storage.profile, etag: storage.profileEtag });
       if (url.pathname === '/api/profile' && method === 'POST') {
         if (storage.profileFail) return reply({ code: storage.profileFail, message: 'Chưa lưu được hồ sơ. Nội dung đang sửa được giữ lại.' }, storage.profileFail === 'CONFLICT' ? 409 : 503);
@@ -51,4 +61,10 @@ export const test = base.extend({
   },
 });
 export { expect };
+
+// Optional review captures are temporary test output, never documentation/runtime assets.
+export async function captureReview(page, filename, options = {}) {
+  if (process.env.REVIEW_SCREENSHOTS !== '1') return;
+  await page.screenshot({ ...options, path: base.info().outputPath(filename) });
+}
 
