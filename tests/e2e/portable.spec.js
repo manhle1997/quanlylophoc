@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { captureReview } from './fixtures.js';
+import { captureReview, APP_VERSION } from './fixtures.js';
 import fs from 'node:fs/promises';
 import syncFs from 'node:fs';
 import path from 'node:path';
@@ -15,7 +15,7 @@ test('M7: daily attendance, restart, five offline games, backup restore and loss
   await fs.mkdir(root, { recursive: true }); await fs.cp(path.resolve('dist'), path.join(root, 'app'), { recursive: true }); await fs.copyFile(path.resolve('build/launcher/Start.exe'), path.join(root, 'Start.exe'));
   const start = async () => {
     const child = spawn(path.join(root, 'Start.exe'), ['--no-browser', `--port=${port}`], { cwd: path.resolve('.'), windowsHide: true, stdio: 'ignore' });
-    await expect.poll(async () => { try { return (await (await fetch(origin + '/classquest-version.json')).json()).version; } catch { return ''; } }).toBe('0.5.1');
+    await expect.poll(async () => { try { return (await (await fetch(origin + '/classquest-version.json')).json()).version; } catch { return ''; } }).toBe(APP_VERSION);
     return child;
   };
   const stop = async child => { if (child.exitCode === null) { const ended = new Promise(resolve => child.once('exit', resolve)); child.kill(); await ended; } };

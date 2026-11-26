@@ -35,7 +35,7 @@ Palette mặc định giữ xanh mực; có sáu màu chọn nhanh và bộ ch�
 
 Đã xem trực tiếp ảnh profile ở 1440/768/390 px, đủ trường/ảnh/logo/màu và không tràn ngang. Kiểm tra autosave/reload, upload/gỡ ảnh, xung đột, khóa sửa trong demo và native restart/file copy. Lint, 79 unit/integration và native storage/profile/security pass. Gate E2E hiện hành và giới hạn hiệu năng tại [TEST_REPORT](TEST_REPORT.md) và [IMPLEMENTATION_STATUS](IMPLEMENTATION_STATUS.md). Gói đang dùng giữ nguyên cho đến khi có yêu cầu đóng gói.
 
-## Nhãn nhân vật 0.5.1
+## Nhãn nhân vật 0.6.0
 
 Giữ typography, giới hạn nhãn và ưu tiên nhân vật đang được tương tác. Xáo thứ tự nhân vật ở đầu lượt bằng visualSeed để các vị trí được gắn nhãn không luôn thuộc các học sinh đầu danh sách. Cả 3D và 2D nhận cùng thứ tự; khi mất WebGL vẫn giữ ánh xạ ID của lượt. Phần này không thay cách chọn kết quả.
 

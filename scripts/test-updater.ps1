@@ -1,6 +1,9 @@
 param([int]$Port = 17846)
 $ErrorActionPreference = 'Stop'
 $workspace = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+$currentVersion = (Get-Content -LiteralPath (Join-Path $workspace 'package.json') -Raw -Encoding UTF8 | ConvertFrom-Json).version
+$versionParts = $currentVersion.Split('.')
+$futureVersion = $versionParts[0] + '.' + $versionParts[1] + '.' + ([int]$versionParts[2] + 1)
 $fixture = Join-Path $workspace ('build\update-process-' + [guid]::NewGuid().ToString('N'))
 $utf8 = New-Object System.Text.UTF8Encoding($false)
 function Write-Utf8($Path, $Text) { [System.IO.File]::WriteAllText($Path, $Text, $utf8) }
@@ -32,10 +35,10 @@ try {
     Copy-Item -LiteralPath (Join-Path $workspace 'dist') -Destination (Join-Path $stage 'next\app') -Recurse
     Copy-Item -LiteralPath (Join-Path $workspace 'build\launcher\Start.exe') -Destination (Join-Path $stage 'next\Start.exe')
     if ($scenario -eq 'invalid-launcher') { Write-Utf8 (Join-Path $stage 'next\Start.exe') 'Synthetic invalid executable' }
-    $targetVersion = '0.5.1'
+    $targetVersion = $currentVersion
     if ($scenario -eq 'health-failure') {
-      $targetVersion = '0.5.2'
-      Write-Utf8 (Join-Path $stage 'next\app\classquest-version.json') '{"app":"ClassQuest","version":"0.5.2","name":"Lớp Học Vui"}'
+      $targetVersion = $futureVersion
+      Write-Utf8 (Join-Path $stage 'next\app\classquest-version.json') (@{app='ClassQuest';version=$futureVersion;name='Lớp Học Vui'} | ConvertTo-Json -Compress)
     }
     Copy-Item -LiteralPath (Join-Path $workspace 'build\launcher\Start.exe') -Destination (Join-Path $stage 'Updater.exe')
     $manifest = @{ ParentPid=$parent.Id; ParentStarted=$parent.StartTime.ToUniversalTime().Ticks; Port=$Port; Version=$targetVersion } | ConvertTo-Json
@@ -54,7 +57,7 @@ try {
     $expected = if ($scenario -eq 'success') { 'success' } else { 'rolled-back' }
     Assert ($result.state -eq $expected) "$scenario transaction result"
     $marker = Invoke-RestMethod "$address/classquest-version.json"
-    $expectedVersion = if ($scenario -eq 'success') { '0.5.1' } else { '0.5.0' }
+    $expectedVersion = if ($scenario -eq 'success') { $currentVersion } else { '0.5.0' }
     Assert ($marker.version -eq $expectedVersion) "$scenario serves expected program"
     foreach ($file in $before.Keys) { Assert ((Get-FileHash -LiteralPath $file).Hash -eq $before[$file]) "$scenario retains $([System.IO.Path]::GetFileName($file))" }
     # Only processes whose executable is inside this isolated fixture can be stopped.

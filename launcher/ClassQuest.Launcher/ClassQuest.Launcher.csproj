@@ -7,7 +7,8 @@
     <AssemblyName>Start</AssemblyName>
     <Product>Lớp Học Vui</Product>
     <Title>Lớp Học Vui</Title>
-    <Version>0.5.1</Version>
+    <!-- package.json is the only application version source; no Node.js needed here. -->
+    <Version>$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)../../package.json')), '&quot;version&quot;\s*:\s*&quot;([^&quot;]+)&quot;').Groups[1].Value)</Version>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
     <PublishSingleFile>true</PublishSingleFile>
@@ -15,5 +16,8 @@
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     <DebugType>none</DebugType>
   </PropertyGroup>
+  <Target Name="ValidateApplicationVersion" BeforeTargets="GenerateAssemblyInfo">
+    <Error Condition="!$([System.Text.RegularExpressions.Regex]::IsMatch('$(Version)', '^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'))" Text="package.json must contain a valid x.y.z application version." />
+  </Target>
 </Project>
 

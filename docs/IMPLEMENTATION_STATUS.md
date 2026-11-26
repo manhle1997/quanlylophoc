@@ -1,6 +1,10 @@
 # Tiến độ Lớp Học Vui
 
-Ngày cập nhật: 2026-11-26. Bản phát triển **0.5.1 — Cập nhật phiên bản, bản quyền và lời thoại trò chơi**. Gói phát hành cục bộ hiện có vẫn là 0.5.0.
+Ngày cập nhật: 2026-11-26. Bản phát triển **0.6.0 — Cập nhật phiên bản, bản quyền và lời thoại trò chơi**. Gói phát hành cục bộ hiện có vẫn là 0.5.0.
+
+Version hiện lấy duy nhất từ package.json.version. Vite tự sinh marker trong dist; MSBuild tự đọc package.json để build assembly, API/console/updater lấy assembly version. Fixture hiện hành tự đọc cùng nguồn. Workflow có thể để trống ô version; giá trị nếu nhập chỉ xác nhận version nguồn. Không cần đồng bộ số version ở launcher/public/test. Tăng version khi chuẩn bị phát hành bằng sửa package.json hoặc npm version --no-git-tag-version.
+
+Gate mới: 91/91 Vitest (13 file, 7 test version), web build/.NET publish pass; fixture chỉ sửa package.json từ 2.7.4 sang 2.8.0 và cả web marker/MSBuild tự đổi đúng. 5/5 E2E portable/update pass trong 24,1 giây; smoke updater thật pass 4 tình huống. Đã xác minh npm ci --offline chấp nhận thay riêng root version khi dependency không đổi. Source version check không cần input pass, offline scan 17 entries/817,7 KiB. Không đóng gói/dispatch và không tạo ảnh review.
 
 ## Quy tắc phát hành hiện hành
 

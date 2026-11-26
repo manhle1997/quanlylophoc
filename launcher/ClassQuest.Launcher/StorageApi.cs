@@ -14,7 +14,7 @@ internal sealed class StorageApi(string baseDirectory, string allowedOrigin, Upd
         context.Response.ContentType = "application/json; charset=utf-8";
         var origin = context.Request.Headers.Origin.ToString();
         if (origin.Length > 0 && origin != allowedOrigin || context.Request.Headers["Sec-Fetch-Site"] == "cross-site") { context.Response.StatusCode = 403; await context.Response.WriteAsJsonAsync(new { code = "ORIGIN_DENIED", message = "Không thể thực hiện yêu cầu từ cửa sổ này." }); return; }
-        if (path == "/api/session" && HttpMethods.IsGet(context.Request.Method)) { await context.Response.WriteAsJsonAsync(new { token, version = "0.5.1", name = "Lớp Học Vui" }); return; }
+        if (path == "/api/session" && HttpMethods.IsGet(context.Request.Method)) { await context.Response.WriteAsJsonAsync(new { token, version = Program.AppVersion, name = "Lớp Học Vui" }); return; }
         var received = Encoding.UTF8.GetBytes(context.Request.Headers["X-ClassQuest-Token"].ToString());
         if (!CryptographicOperations.FixedTimeEquals(received, Encoding.UTF8.GetBytes(token))) { context.Response.StatusCode = 403; await context.Response.WriteAsJsonAsync(new { code = "SESSION_EXPIRED", message = "Ứng dụng vừa được mở lại. Hãy tải lại cửa sổ để tiếp tục." }); return; }
         try

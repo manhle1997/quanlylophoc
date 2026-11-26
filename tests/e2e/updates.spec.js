@@ -1,4 +1,4 @@
-import { test, expect, captureReview } from './fixtures.js';
+import { test, expect, captureReview, APP_VERSION } from './fixtures.js';
 
 for (const width of [390, 768, 1440]) {
   test(`update settings and exact copyright at ${width}px`, async ({ page, storage }) => {
@@ -9,7 +9,7 @@ for (const width of [390, 768, 1440]) {
     await expect(page.locator('.app-copyright')).toHaveText("Sản phẩm của July Tech's Team. Mọi quyền được bảo lưu");
     await expect(page.locator('.app-copyright strong')).toHaveText("July Tech's Team");
     await page.locator('[data-page="settings"]:visible').first().click();
-    await expect(page.locator('.app-version')).toHaveText('0.5.1');
+    await expect(page.locator('.app-version')).toHaveText(APP_VERSION);
     expect(storage.updateRequests).toEqual([{ path: '/api/updates', method: 'GET' }]);
     await page.getByRole('button', { name: 'Kiểm tra cập nhật', exact: true }).click();
     await expect(page.getByRole('status').filter({ hasText: 'Bản thử nghiệm' })).toBeVisible();

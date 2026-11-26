@@ -1,4 +1,4 @@
-# Cảnh trò chơi và lời thoại — bản phát triển 0.5.1
+# Cảnh trò chơi và lời thoại — bản phát triển 0.6.0
 
 Áp dụng intentional-visual-design tại SKILL.md. Đối tượng là lớp học xem qua màn hình/máy chiếu: vui nhộn, thân thiện, dễ đọc, mỗi trò có thế giới riêng. Ưu tiên hoạt động đang diễn ra và lời thoại, sau đó mới đến chi tiết cảnh; điều khiển giữ vị trí, không có hiệu ứng chớp nhanh hoặc dịch vụ mạng.
 
@@ -32,4 +32,4 @@ Fishing là gate trước khi mở rộng: đã kiểm tra hai câu thoại, v�
 
 ## Phát hành
 
-Chỉ build/test/review cho đến khi người dùng yêu cầu đóng gói. Gói Windows/ZIP 0.5.0 hiện có giữ nguyên; các tính năng ở trên thuộc mã nguồn/build phát triển 0.5.1.
+Chỉ build/test/review cho đến khi người dùng yêu cầu đóng gói. Gói Windows/ZIP 0.5.0 hiện có giữ nguyên; các tính năng ở trên thuộc mã nguồn/build phát triển 0.6.0.

@@ -12,7 +12,7 @@ Chân trang sử dụng đúng tên: Sản phẩm của **July Tech's Team**. M�
 
 Nguồn cố định: repository public `manhle1997/quanlylophoc`. Cập nhật theo **Release đã Publish**, không theo mỗi commit, tag đơn thuần, Actions artifact hay draft. Bộ chọn lấy version số cao nhất lớn hơn bản đang dùng, so sánh từng số x.y.z; không cài lại cùng bản hoặc downgrade. Prerelease đã Publish cũng được nhận vì dự án hiện phát hành RC; giao diện ghi rõ **Bản thử nghiệm** trước khi tải/cài.
 
-Đồng bộ version nguồn theo RELEASE_WORKFLOW.md, kiểm thử local, push rồi chạy workflow thủ công khi muốn đóng gói. Gói phải mang tên `Lop-Hoc-Vui-x.y.z-rc-win-x64.zip`, tag `vx.y.z`, có đúng một asset uploaded và digest `sha256:` hợp lệ trong GitHub API. Workflow hiện có đã tạo đúng tên, không cần thêm Updater.exe riêng vào ZIP: launcher hiện tại tự sao chép thành helper khi cài. Kiểm tra bản nháp rồi Publish để người dùng có thể tìm thấy. Chỉ push code hoặc build CI chưa tạo bản cập nhật.
+Đổi duy nhất version trong package.json (hoặc dùng npm version), kiểm thử local, push rồi chạy workflow thủ công khi muốn đóng gói; xem RELEASE_WORKFLOW.md. Gói phải mang tên `Lop-Hoc-Vui-x.y.z-rc-win-x64.zip`, tag `vx.y.z`, có đúng một asset uploaded và digest `sha256:` hợp lệ trong GitHub API. Workflow tự lấy version nguồn, không cần thêm Updater.exe riêng vào ZIP: launcher tự sao chép thành helper khi cài. Kiểm tra bản nháp rồi Publish để người dùng có thể tìm thấy. Chỉ push code hoặc build CI chưa tạo bản cập nhật.
 
 ## Luồng và giới hạn
 

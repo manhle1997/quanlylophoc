@@ -1,4 +1,4 @@
-# Hồ sơ giáo viên — 0.5.1
+# Hồ sơ giáo viên — 0.6.0
 
 Tab **Thông tin cá nhân** ở mục Tiện ích; nút ảnh đại diện trên thanh trên cùng dùng được cả trên màn hình nhỏ. Chỉnh họ tên, môn dạy/chức vụ, tên trường, email, số điện thoại, ảnh đại diện, logo trường và màu chủ đạo. Tên/ảnh/logo xuất hiện trong shell. Màu được áp dụng ngay, cân chỉnh độ đậm để giữ độ tương phản; scene trò chơi giữ palette riêng.
 

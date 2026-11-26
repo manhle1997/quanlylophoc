@@ -12,6 +12,7 @@ import { DEFAULT_PROFILE } from '../src/core/profile/profile-service.js';
 import { createHash } from 'node:crypto';
 
 const workspace = path.resolve('.'), root = path.join(workspace, 'build', 'Kiểm thử Class Quest', crypto.randomUUID());
+const { version } = JSON.parse(await fs.readFile(path.join(workspace, 'package.json'), 'utf8'));
 if (!root.startsWith(workspace + path.sep)) throw new Error('Unsafe target');
 const occupied = await new Promise(resolve => { const socket = net.connect(17844, '127.0.0.1'); socket.once('connect', () => { socket.destroy(); resolve(true); }); socket.once('error', () => resolve(false)); });
 if (occupied) throw new Error('Port 17844 is occupied. Existing user application is preserved; do not run persistence tests against it.');
@@ -29,7 +30,7 @@ const waitExit = child => child.exitCode !== null ? Promise.resolve(child.exitCo
 const stop = async child => { if (child.exitCode === null) { const exit = waitExit(child); child.kill(); await exit; } };
 const start = async () => {
   const child = launch(); let output = ''; child.stdout.on('data', b => { output += b; }); child.stderr.on('data', b => { output += b; });
-  for (let i = 0; i < 100; i++) { try { if ((await request('/classquest-version.json')).json?.version === '0.5.1') return child; } catch {} if (child.exitCode !== null) throw new Error(output); await new Promise(r => setTimeout(r, 100)); }
+  for (let i = 0; i < 100; i++) { try { if ((await request('/classquest-version.json')).json?.version === version) return child; } catch {} if (child.exitCode !== null) throw new Error(output); await new Promise(r => setTimeout(r, 100)); }
   await stop(child); throw new Error('Launcher did not become ready');
 };
 let child = await start();

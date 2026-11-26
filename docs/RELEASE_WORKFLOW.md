@@ -11,13 +11,17 @@ Repository: https://github.com/manhle1997/quanlylophoc. Source trên nhánh main
 
 Chạy lint/test phù hợp tại local trước khi commit/push. GitHub chỉ hiện thao tác Run workflow sau khi file manual workflow nằm trên default branch. CI trên GitHub chỉ xác nhận source build được; không lặp lại bộ test local. Workflow release không bắt buộc một lượt CI test thành công trước khi chạy.
 
-Trước khi đổi version, đồng bộ package.json, hai giá trị root trong package-lock.json, public/classquest-version.json, csproj, marker và session API launcher. Hiện test-launcher/portable fixture cũng kiểm tra version cụ thể, cần cập nhật tương ứng. Script check-release-version.mjs từ chối phiên bản lệch hoặc đầu vào không đúng dạng x.y.z; không tự sửa source khi phát hành.
+**Chỉ `version` trong `package.json` quyết định phiên bản ứng dụng.** Khi chuẩn bị phát hành, sửa giá trị x.y.z tại đây hoặc chạy `npm version patch --no-git-tag-version` để tăng bản vá; npm tự cập nhật metadata tương ứng trong package-lock.json. Không cần tăng version sau mỗi lần sửa code, chỉ khi muốn phát hành bản mới. Không sửa tay version trong launcher, marker hoặc test.
+
+Vite tự tạo dist/classquest-version.json khi build; không còn file version phải đồng bộ trong public/. MSBuild đọc package.json khi build .NET (không cần Node), version API/console/updater lấy từ assembly đã build. Giao diện đọc version API; fixture phụ thuộc version hiện hành tự đọc package.json. Script check-release-version.mjs lấy tag/tên ZIP từ cùng nguồn. Metadata root version trong lockfile do npm quản lý, không phải nguồn version của app; nếu sửa package.json trực tiếp thì build/release vẫn đọc đúng giá trị tại đó.
+
+Commit/push thay đổi lên main rồi tạo lượt Run workflow mới; Re-run của lượt cũ vẫn dùng commit cũ. Ô version là tùy chọn: để trống tự dùng package.json; nếu nhập thì phải khớp, nhằm bắt lỗi gõ nhầm. Nhập version trên GitHub không sửa mã nguồn.
 
 ## Khi muốn tạo bản nháp
 
 1. Vào repository → Actions → Prepare Windows release draft → Run workflow.
-2. Chọn main, nhập version đúng source, ví dụ 0.5.1. Bấm Run workflow mới bắt đầu đóng gói trên runner Windows.
-3. Workflow từ chối tag đã tồn tại, kiểm tra version frontend/launcher/API, build giao diện và publish launcher. Không chạy lại lint/unit/E2E/native test trên GitHub.
+2. Chọn main, để trống version để dùng package.json rồi bấm Run workflow. Chỉ thao tác này mới bắt đầu đóng gói trên runner Windows.
+3. Workflow xác thực version nguồn, từ chối tag đã tồn tại, build web và launcher cùng version từ package.json. Không chạy lại lint/unit/E2E/native test trên GitHub.
 4. Chạy package:release rồi verify-release.ps1 -ArchiveOnly: ZIP phải khớp bytes build, checksum/tên gói đúng và không có file dữ liệu người dùng. Chế độ này không khởi chạy ứng dụng hoặc test. Smoke khởi động đầy đủ vẫn có thể chạy ở local bằng verify-release.ps1 không kèm switch.
 5. Gói ZIP và checksum được lưu trong Actions artifact 14 ngày. Job riêng có quyền contents:write tạo **draft prerelease** gắn đúng commit đã build. Job build chỉ có contents:read.
 6. Vào Releases, kiểm tra bản nháp và ghi chú trước khi tự chọn Publish release. Workflow không tự công bố. Hiện dự án còn gate QA thiết bị thật nên mặc định là Release Candidate/prerelease.

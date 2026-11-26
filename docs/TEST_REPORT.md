@@ -1,4 +1,4 @@
-# Kiểm thử Lớp Học Vui — bản phát triển 0.5.1
+# Kiểm thử Lớp Học Vui — bản phát triển 0.6.0
 
 2026-11-26, Windows x64, Node 20.19.6, .NET SDK 10.0.401, Chromium 159. Chỉ dùng nhân vật và dữ liệu giả trong kiểm thử/ảnh. Gói phát hành vẫn là 0.5.0; không đóng gói khi chưa được người dùng yêu cầu.
 
@@ -7,7 +7,7 @@
 | Gate | Kết quả |
 |---|---|
 | Lint | Pass, không lỗi/cảnh báo |
-| Vitest | 89/89, 13 file |
+| Vitest | 91/91, 13 file; 7 test version |
 | Vite build | Pass, 74 modules |
 | Static offline | Pass, 17 entries, 817,7 KiB sau sửa thoát demo |
 | Native storage/profile/security | Pass sau tích hợp updater; fixture riêng, dữ liệu giả |
@@ -18,9 +18,11 @@
 | Hồi quy sau sửa thoát demo | 32/32 pass, 56,5 giây; gồm 4 regression mới và các luồng quản lý/game/layout/storage/profile/update |
 | Sau chỉnh nền HUD | 5/5 desktop/phone/tablet pass, 40,9 giây |
 | Packaging | Không thực hiện theo yêu cầu người dùng |
-| Workflow local | actionlint 1.7.12 pass cấu hình build-only; version check CLI + 5 tests pass; ArchiveOnly fixture pass |
+| Workflow local | actionlint 1.7.12 đã pass phần build-only trước đây; version check CLI không cần input + 7 tests pass; ArchiveOnly fixture pass |
 
 ## Thoát chơi thử và quản lý ảnh kiểm thử
+
+Sau khi gom version về package.json: 91/91 Vitest, Vite build và .NET publish pass; 5/5 E2E portable/update pass (24,1 giây), smoke updater thật pass 4 tình huống. Fixture hiện hành tự đọc version nguồn; các unit fixture giả lập upgrade 0.5.1→0.5.2 vẫn giữ để kiểm tra thuật toán độc lập. Không package/dispatch, không tạo ảnh review.
 
 Đã tái hiện trên build cũ: từ lần mở đầu, Chơi thử → Quản lý học sinh vẫn dùng store.demo và autosave bị tắt. Nay điều hướng Quản lý học sinh tự đọc lại dữ liệu thật và bật autosave; không nhập các lớp minh họa. Về lớp của tôi giữ cùng hành vi. Vào demo chờ xong lần lưu đang chạy trước khi thay document. Lỗi đọc khi thoát demo hiển thị lỗi và không ghi đè bằng danh sách rỗng.
 
@@ -50,7 +52,7 @@ Theo yêu cầu người dùng, test/lint chạy local; CI chỉ build web và l
 
 verify-release.ps1 thêm -ArchiveOnly: kiểm tra checksum, tên và bytes của ZIP so với build rồi thoát trước bước kiểm tra cổng/giải nén/khởi động. Test fixture có exe giả vẫn pass ArchiveOnly (không khởi chạy), sau khi đổi dist/index.html thì bị từ chối. Script không kèm switch vẫn giữ smoke đầy đủ cho local. Đã chạy 84/84 test và build tại local sau thay đổi này.
 
-Năm test mới kiểm tra nguồn đồng nhất, đầu vào thiếu/v-prefix/leading zero/path/newline/shell-like, yêu cầu version chưa có trong source, launcher/API/frontend cũ và version source thật. Đã chạy CLI với 0.5.1 thành công, không tạo gói. Đã tải actionlint từ release chính thức và đối chiếu checksum trước khi kiểm tra YAML; công cụ tạm được dọn. Chi tiết thao tác tại RELEASE_WORKFLOW.md.
+7 test version kiểm tra canonical package.json hợp lệ, input tùy chọn trống/thiếu, v-prefix/leading zero/path/newline/shell-like, expected version không khớp và source hiện hành. Fixture tạo hai build từ cùng cấu hình, chỉ đổi package.json từ 2.7.4 sang 2.8.0: dist marker và dotnet msbuild -getProperty:Version đều đổi đúng, không sửa launcher/public/test. npm ci --offline trong fixture không dependency cũng pass khi lockfile còn root version cũ. CLI để trống version tự lấy source thành công, không tạo gói. MSBuild không cần Node để đọc version. Chi tiết tại RELEASE_WORKFLOW.md.
 
 ## Tên đầu lớp và kết quả
 

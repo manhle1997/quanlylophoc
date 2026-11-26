@@ -18,6 +18,7 @@
 - Theo yêu cầu người dùng 2026-11-26: chỉ đóng gói/phát hành khi người dùng yêu cầu rõ. Trong lúc phát triển chỉ build/test/review; không tự chạy package:release, đổi tên thư mục/ZIP phát hành hoặc dừng ứng dụng đang dùng để cập nhật gói. Khi được yêu cầu đóng gói, áp dụng các quy tắc bảo toàn data và tái sử dụng thư mục ở trên.
 - Theo yêu cầu người dùng 2026-11-26: lint/test chức năng chạy tại local trước khi push. GitHub CI chỉ build; workflow phát hành không chạy lại unit/E2E/native test hoặc cài Playwright. Giữ kiểm tra version, tên gói, checksum và đối chiếu ZIP với build; việc đóng gói vẫn cần yêu cầu thủ công.
 - Theo phản hồi người dùng 2026-11-26: không tự ghi hàng loạt ảnh kiểm thử vào docs hoặc Git. Test mặc định chỉ giữ ảnh lỗi trong test-results/ đã ignore; ảnh review chỉ chụp khi cần, bật REVIEW_SCREENSHOTS=1, lưu tạm trong test-results/ và dọn sau khi xem. Không xóa ảnh/avatar/logo trong data/ hoặc asset chạy ứng dụng.
+- Version ứng dụng chỉ lấy từ package.json.version. Không khai báo lại số version trong launcher/public/test/workflow. Vite tạo marker lúc build; MSBuild đọc package.json và runtime lấy assembly version. Khi chuẩn bị phát hành mới, sửa package.json hoặc dùng npm version --no-git-tag-version để npm quản lý cả metadata lockfile. Không tăng version chỉ vì có một lần sửa code. Các số version giả lập cố định trong test thuật toán và số liệu lịch sử trong báo cáo không phải nguồn version runtime.
 
 <!-- postman-cli:installation:start -->
 Postman CLI is installed on this device, and can be used for API Engineering work.

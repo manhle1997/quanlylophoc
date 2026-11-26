@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 
@@ -7,7 +8,7 @@ internal static class Program
 {
     private static int Port = 17843;
     private static string Address => $"http://127.0.0.1:{Port}/";
-    private const string Marker = "{\"app\":\"ClassQuest\",\"version\":\"0.5.1\",\"name\":\"Lớp Học Vui\"}";
+    internal static readonly string AppVersion = typeof(Program).Assembly.GetName().Version!.ToString(3);
     private static readonly Dictionary<string, string> Mime = new(StringComparer.OrdinalIgnoreCase)
     {
         [".html"] = "text/html; charset=utf-8", [".js"] = "application/javascript; charset=utf-8",
@@ -77,7 +78,7 @@ internal static class Program
             options.Listen(IPAddress.Loopback, Port, endpoint => endpoint.Protocols = HttpProtocols.Http1);
         });
         await using var app = builder.Build();
-        var storageApi = new StorageApi(AppContext.BaseDirectory, Address.TrimEnd('/'), new UpdateService(AppContext.BaseDirectory, typeof(Program).Assembly.GetName().Version!.ToString(3), Port), app.Lifetime);
+        var storageApi = new StorageApi(AppContext.BaseDirectory, Address.TrimEnd('/'), new UpdateService(AppContext.BaseDirectory, AppVersion, Port), app.Lifetime);
         app.Run(async context =>
         {
             context.Response.Headers.XContentTypeOptions = "nosniff";
@@ -118,7 +119,7 @@ internal static class Program
         });
         // Start must succeed before opening a URL: an unrelated port owner never gets opened.
         await app.StartAsync();
-        Console.WriteLine($"Lớp Học Vui 0.5.1 · {Address}");
+        Console.WriteLine($"Lớp Học Vui {AppVersion} · {Address}");
         Console.WriteLine("Giữ cửa sổ này mở. Đóng cửa sổ hoặc Ctrl+C để dừng server.");
         Console.WriteLine("Lớp học được mở và lưu tự động. Chỉ cần thêm lớp và học sinh trong ứng dụng.");
         if (openBrowser) OpenBrowser();
@@ -137,7 +138,9 @@ internal static class Program
         try
         {
             using var client = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false, UseProxy = false }) { Timeout = TimeSpan.FromSeconds(2) };
-            return (await client.GetStringAsync(Address + "classquest-version.json")).Trim() == Marker;
+            using var document = JsonDocument.Parse(await client.GetStringAsync(Address + "classquest-version.json"));
+            var marker = document.RootElement;
+            return marker.GetProperty("app").GetString() == "ClassQuest" && marker.GetProperty("version").GetString() == AppVersion && marker.GetProperty("name").GetString() == "Lớp Học Vui";
         }
         catch { return false; }
     }

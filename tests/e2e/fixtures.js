@@ -1,6 +1,11 @@
 import { test as base, expect } from '@playwright/test';
 import { validateDocument } from '../../src/core/domain/validation.js';
 import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+
+export const APP_VERSION = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8')).version;
+const parts = APP_VERSION.split('.').map(Number);
+const NEXT_VERSION = `${parts[0]}.${parts[1]}.${parts[2] + 1}`;
 
 export const test = base.extend({
   storage: async ({}, use) => { await use({ document: null, etag: 'missing', writes: 0, attempts: 0, backups: [], fail: null, loadError: null, profile: null, profileEtag: 'missing', profileWrites: 0, images: new Map(), profileFail: null }); },
@@ -8,13 +13,13 @@ export const test = base.extend({
     await page.route('**/api/**', async route => {
       const url = new URL(route.request().url()), method = route.request().method();
       const reply = (json, status = 200) => route.fulfill({ status, json });
-      if (url.pathname === '/api/session') return reply({ token: 'fixture-token', version: '0.5.1' });
+      if (url.pathname === '/api/session') return reply({ token: 'fixture-token', version: APP_VERSION });
       if (route.request().headers()['x-classquest-token'] !== 'fixture-token') return reply({ code: 'SESSION_EXPIRED', message: 'Phiên đã đổi.' }, 403);
       if (url.pathname.startsWith('/api/updates')) {
         storage.updateRequests ??= [];
         storage.updateRequests.push({ path: url.pathname, method });
-        storage.updateStatus ??= { state: 'idle', currentVersion: '0.5.1' };
-        if (url.pathname === '/api/updates/check') storage.updateStatus = storage.updateError ? { state: 'error', currentVersion: '0.5.1', message: 'Chưa cập nhật được. Kiểm tra kết nối Internet và thử lại.' } : { state: 'available', currentVersion: '0.5.1', version: '0.5.2', prerelease: true };
+        storage.updateStatus ??= { state: 'idle', currentVersion: APP_VERSION };
+        if (url.pathname === '/api/updates/check') storage.updateStatus = storage.updateError ? { state: 'error', currentVersion: APP_VERSION, message: 'Chưa cập nhật được. Kiểm tra kết nối Internet và thử lại.' } : { state: 'available', currentVersion: APP_VERSION, version: NEXT_VERSION, prerelease: true };
         if (url.pathname === '/api/updates/download') storage.updateStatus = { ...storage.updateStatus, state: 'ready' };
         if (url.pathname === '/api/updates/cancel') storage.updateStatus = { ...storage.updateStatus, state: 'available' };
         if (url.pathname === '/api/updates/apply') return reply({ code: 'UPDATE_FIXTURE', message: 'Kiểm thử không khởi động lại máy.' }, 503);

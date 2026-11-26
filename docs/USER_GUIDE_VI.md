@@ -33,7 +33,7 @@ Có thể tìm tên học sinh để cập nhật nhanh. Các ô tổng hợp hi
 
 - Chọn lớp, một trong năm trò chơi và thời lượng, rồi bấm **Bắt đầu gọi**.
 - Vị trí nhân vật và các tên hiển thị trong cảnh được xáo trộn mỗi lượt. Xem tên được gọi chính thức tại màn **Học sinh được chọn** khi kết thúc hiệu ứng.
-- Trong bản phát triển 0.5.1, nhân vật có bong bóng thoại khi hụt, với câu vui phù hợp từng trò. Thoại giữ nguyên khi tạm dừng và tự ẩn khi có kết quả. Chế độ 2D cũng có thoại; chọn **Giảm chuyển động** để giảm trang trí chuyển động.
+- Trong bản phát triển 0.6.0, nhân vật có bong bóng thoại khi hụt, với câu vui phù hợp từng trò. Thoại giữ nguyên khi tạm dừng và tự ẩn khi có kết quả. Chế độ 2D cũng có thoại; chọn **Giảm chuyển động** để giảm trang trí chuyển động.
 - Chỉ các bạn **vắng hôm nay** bị loại. Đi muộn vẫn có thể được gọi. Ngày lịch sử đang xem không ảnh hưởng danh sách gọi hôm nay.
 - Nếu chưa ghi nhận hôm nay, màn hình có thông báo và dùng toàn bộ học sinh đang học.
 - **Không gọi trùng** cho mỗi bạn một cơ hội trong vòng. **Tạo vòng mới** cho các bạn cơ hội lại, vẫn giữ điểm danh và lịch sử; thao tác này có xác nhận.
@@ -65,5 +65,5 @@ Các bản cũ chưa có nút cập nhật cần được người hỗ trợ n�
 
 Nếu máy không hiển thị được 3D, ứng dụng dùng chế độ 2D và giữ nguyên kết quả. Có thể chủ động chọn 2D hoặc chất lượng thấp trong Cài đặt.
 
-Phiên bản **0.5.1 RC** cần kiểm tra thêm trên máy Windows sạch, USB, loa và máy chiếu của trường. Khi cập nhật hoặc chuyển máy, nhờ người hỗ trợ giữ nguyên lớp học, hồ sơ và ảnh đang có; không tự xóa các thành phần ứng dụng. Dữ liệu từ bản cũ được đọc tự động, không phải nhập lại danh sách.
+Phiên bản **0.6.0 RC** cần kiểm tra thêm trên máy Windows sạch, USB, loa và máy chiếu của trường. Khi cập nhật hoặc chuyển máy, nhờ người hỗ trợ giữ nguyên lớp học, hồ sơ và ảnh đang có; không tự xóa các thành phần ứng dụng. Dữ liệu từ bản cũ được đọc tự động, không phải nhập lại danh sách.
 
