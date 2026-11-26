@@ -7,7 +7,7 @@
 | Gate | Kết quả |
 |---|---|
 | Lint | Pass, không lỗi/cảnh báo |
-| Vitest | 79/79, 11 file |
+| Vitest | 84/84, 12 file |
 | Vite build | Pass, 71 modules |
 | Static offline | Pass, 17 entries, 811,5 KiB |
 | Native storage/profile/security | Pass trước phần nâng cấp cảnh; backend chỉ đổi version |
@@ -16,6 +16,15 @@
 | Toàn bộ build cuối | 44/44 pass, không skip, 4,6 phút |
 | Sau chỉnh nền HUD | 5/5 desktop/phone/tablet pass, 40,9 giây |
 | Packaging | Không thực hiện theo yêu cầu người dùng |
+| Workflow local | actionlint 1.7.12 pass ci.yml/release.yml; version check CLI + 5 tests pass |
+
+## GitHub và phát hành thủ công
+
+Đã xác nhận repository public manhle1997/quanlylophoc, main tại e8754d2 khớp remote và workspace. Không track data/release/build/.env. Lượt CI đầu tiên 45776699651 đã completed/success, cả launcher và web pass.
+
+Workflow manual mới chỉ được chuẩn bị local, chưa commit/push/dispatch. Chỉ nhận workflow_dispatch trên main, đầu vào x.y.z khớp package/lock/web/csproj/marker/session API, từ chối tag đã có; build job chỉ contents:read, job tạo draft riêng contents:write. Chỉ khi được bấm thủ công mới package/smoke/upload và tạo draft prerelease, không tự Publish release.
+
+Năm test mới kiểm tra nguồn đồng nhất, đầu vào thiếu/v-prefix/leading zero/path/newline/shell-like, yêu cầu version chưa có trong source, launcher/API/frontend cũ và version source thật. Đã chạy CLI với 0.5.1 thành công, không tạo gói. Đã tải actionlint từ release chính thức và đối chiếu checksum trước khi kiểm tra YAML; công cụ tạm được dọn. Chi tiết thao tác tại RELEASE_WORKFLOW.md.
 
 ## Tên đầu lớp và kết quả
 
@@ -53,4 +62,4 @@ Theo yêu cầu mới chỉ build/test/review. Không cập nhật thư mục/ZI
 
 Đã dọn fixture portable, test-results và manifest tạm. Build chỉ còn launcher; dist là build phát triển hiện hành. Không xóa hoặc thay data/ trong thư mục phát hành. SHA-256 ZIP 0.5.0 vẫn `1cef2185d81741c53c76e5055ba61e96f631cd8135e48884710de2dbf246dd72`.
 
-Cần QA thực địa: Windows sạch/Edge, USB/disk full, ngắt mạng vật lý, loa/máy chiếu/iGPU, screen reader/cảm ứng. CI chưa chạy remote vì workspace không có Git. Chưa nghiệm thu FPS trên máy trường.
+Cần QA thực địa: Windows sạch/Edge, USB/disk full, ngắt mạng vật lý, loa/máy chiếu/iGPU, screen reader/cảm ứng. CI đầu tiên trên GitHub đã pass web và launcher; workflow manual mới chưa được chạy thực. Chưa nghiệm thu FPS trên máy trường.

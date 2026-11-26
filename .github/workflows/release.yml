@@ -1,0 +1,113 @@
+name: Prepare Windows release draft
+
+'on':
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version in package.json, without v (example: 0.5.1)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-release-draft
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    if: github.ref == 'refs/heads/main'
+    runs-on: windows-latest
+    timeout-minutes: 35
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
+      zip_name: ${{ steps.version.outputs.zip_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Validate requested version
+        id: version
+        run: node scripts/check-release-version.mjs
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+      - name: Refuse an existing tag
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          git show-ref --verify --quiet "refs/tags/$env:RELEASE_TAG"
+          if ($LASTEXITCODE -eq 0) { throw 'This version tag already exists. Choose a new source version.' }
+          if ($LASTEXITCODE -ne 1) { throw 'Could not verify existing tags.' }
+          $global:LASTEXITCODE = 0
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test
+      - run: npm run build
+      - run: npm run verify:offline
+      - run: dotnet publish launcher/ClassQuest.Launcher/ClassQuest.Launcher.csproj -c Release -r win-x64 --self-contained true -o build/launcher
+      - run: node scripts/test-launcher.mjs
+      - run: npx playwright install chromium
+      - run: npm run test:e2e
+      - name: Package only after all checks pass
+        run: npm run package:release
+      - name: Verify archive bytes and extracted app
+        shell: powershell
+        run: ./scripts/verify-release.ps1
+      - name: Upload verified candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-candidate-${{ steps.version.outputs.version }}
+          path: |
+            release/${{ steps.version.outputs.zip_name }}
+            release/${{ steps.version.outputs.zip_name }}.sha256
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: release-test-results
+          path: test-results/
+          if-no-files-found: ignore
+
+  draft:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows-candidate-${{ needs.prepare.outputs.version }}
+          path: candidate
+      - name: Create a draft prerelease; publishing stays manual
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ needs.prepare.outputs.tag }}
+          RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+          RELEASE_ZIP: ${{ needs.prepare.outputs.zip_name }}
+          RELEASE_COMMIT: ${{ github.sha }}
+        run: |
+          printf '%s\n' \
+            "Lớp Học Vui ${RELEASE_VERSION} — Windows x64 release candidate." \
+            'Gói đã qua build, kiểm thử và kiểm tra ZIP/khởi động sau giải nén.' \
+            'Không chứa dữ liệu lớp, hồ sơ, ảnh hoặc backup của người dùng.' \
+            'Giữ nguyên data/ khi nâng cấp. Chưa có chức năng tự cập nhật trong ứng dụng.' \
+            'Đây là bản nháp. Chỉ công bố sau khi người phụ trách kiểm tra và chọn Publish release.' \
+            > release-notes.txt
+          gh release create "$RELEASE_TAG" \
+            "candidate/$RELEASE_ZIP" "candidate/$RELEASE_ZIP.sha256" \
+            --draft --prerelease --target "$RELEASE_COMMIT" \
+            --title "Lớp Học Vui $RELEASE_VERSION RC · Windows x64" \
+            --notes-file release-notes.txt
