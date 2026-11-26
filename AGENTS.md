@@ -16,6 +16,7 @@
 - Đổi tên/cập nhật phiên bản không được xóa danh sách lớp/học sinh, điểm danh, lịch sử hoặc các bản sao lưu dữ liệu. Giữ nguyên `data/` tại chỗ khi tái sử dụng thư mục; không đưa dữ liệu này vào ZIP. Nếu cập nhật lỗi, hoàn tác việc đổi tên và nội dung chương trình. Giữ logic đọc schema cũ cần thiết cho dữ liệu hiện có.
 - Launcher chỉ bind loopback; ngoại lệ được người dùng cho phép là API lưu snapshot/backup nội bộ. Kiểm tra Host/Origin/token, không expose đường dẫn data/ dưới dạng static, không nhận đường dẫn file từ client.
 - Theo yêu cầu người dùng 2026-11-26: chỉ đóng gói/phát hành khi người dùng yêu cầu rõ. Trong lúc phát triển chỉ build/test/review; không tự chạy package:release, đổi tên thư mục/ZIP phát hành hoặc dừng ứng dụng đang dùng để cập nhật gói. Khi được yêu cầu đóng gói, áp dụng các quy tắc bảo toàn data và tái sử dụng thư mục ở trên.
+- Theo yêu cầu người dùng 2026-11-26: lint/test chức năng chạy tại local trước khi push. GitHub CI chỉ build; workflow phát hành không chạy lại unit/E2E/native test hoặc cài Playwright. Giữ kiểm tra version, tên gói, checksum và đối chiếu ZIP với build; việc đóng gói vẫn cần yêu cầu thủ công.
 
 <!-- postman-cli:installation:start -->
 Postman CLI is installed on this device, and can be used for API Engineering work.

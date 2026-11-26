@@ -135,7 +135,7 @@ describe('release directory reuse', () => {
     await fs.mkdir(path.join(root, 'scripts')); await fs.mkdir(path.join(root, 'build/launcher'), { recursive: true });
     await fs.mkdir(path.join(root, 'docs')); await fs.mkdir(path.join(root, 'node_modules/three'), { recursive: true });
     await fs.mkdir(path.join(root, 'node_modules/gsap/dist'), { recursive: true });
-    for (const script of ['package-release.mjs', 'release-publisher.mjs', 'create-release-zip.ps1']) await fs.copyFile(path.join(workspace, 'scripts', script), path.join(root, 'scripts', script));
+    for (const script of ['package-release.mjs', 'release-publisher.mjs', 'create-release-zip.ps1', 'verify-release.ps1']) await fs.copyFile(path.join(workspace, 'scripts', script), path.join(root, 'scripts', script));
     await fs.writeFile(path.join(root, 'package.json'), JSON.stringify({ version: '0.5.0', type: 'module' }));
     await fs.mkdir(path.join(root, 'dist'));
     await fs.writeFile(path.join(root, 'dist/index.html'), 'synthetic new frontend');
@@ -155,5 +155,10 @@ describe('release directory reuse', () => {
     expect(await fs.readFile(zip + '.sha256', 'utf8')).toContain(hash(await fs.readFile(zip)));
     expect(await fs.readdir(path.join(root, 'build'))).toEqual(['launcher']);
     expect((await fs.readdir(path.join(root, 'release'))).sort()).toEqual(['ClassQuest-0.5.0', 'Lop-Hoc-Vui-0.5.0-rc-win-x64.zip', 'Lop-Hoc-Vui-0.5.0-rc-win-x64.zip.sha256']);
+    // The fake executable cannot run: archive-only verification must finish without starting it.
+    const verify = () => execFileSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-File', path.join(root, 'scripts/verify-release.ps1'), '-ArchiveOnly'], { cwd: root, windowsHide: true, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+    expect(verify()).toContain('application was not started');
+    await fs.writeFile(path.join(root, 'dist/index.html'), 'synthetic modified build');
+    expect(verify).toThrow();
   });
 });

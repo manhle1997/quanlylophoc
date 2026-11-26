@@ -1,3 +1,5 @@
+param([switch]$ArchiveOnly)
+
 $ErrorActionPreference = 'Stop'
 $workspacePath = [IO.Path]::GetFullPath((Split-Path -Parent $PSScriptRoot))
 $version = (Get-Content -LiteralPath (Join-Path $workspacePath 'package.json') -Raw -Encoding UTF8 | ConvertFrom-Json).version
@@ -28,6 +30,11 @@ try {
         if (-not $archive.GetEntry('ClassQuest/app/' + $relative)) { throw "Missing app entry: $relative" }
     }
 } finally { $archive.Dispose() }
+if ($ArchiveOnly) {
+    Write-Output "PASS: $entryCount ZIP entries and SHA-256 match build; application was not started."
+    Write-Output "SHA-256: $expectedHash"
+    return
+}
 $port = 17845
 $probe = [Net.Sockets.TcpClient]::new()
 try { $probe.Connect('127.0.0.1', $port); throw 'Smoke port is occupied; existing application is preserved.' }

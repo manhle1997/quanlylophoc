@@ -16,13 +16,15 @@
 | Toàn bộ build cuối | 44/44 pass, không skip, 4,6 phút |
 | Sau chỉnh nền HUD | 5/5 desktop/phone/tablet pass, 40,9 giây |
 | Packaging | Không thực hiện theo yêu cầu người dùng |
-| Workflow local | actionlint 1.7.12 pass ci.yml/release.yml; version check CLI + 5 tests pass |
+| Workflow local | actionlint 1.7.12 pass cấu hình build-only; version check CLI + 5 tests pass; ArchiveOnly fixture pass |
 
 ## GitHub và phát hành thủ công
 
 Đã xác nhận repository public manhle1997/quanlylophoc, main tại e8754d2 khớp remote và workspace. Không track data/release/build/.env. Lượt CI đầu tiên 45776699651 đã completed/success, cả launcher và web pass.
 
-Workflow manual mới chỉ được chuẩn bị local, chưa commit/push/dispatch. Chỉ nhận workflow_dispatch trên main, đầu vào x.y.z khớp package/lock/web/csproj/marker/session API, từ chối tag đã có; build job chỉ contents:read, job tạo draft riêng contents:write. Chỉ khi được bấm thủ công mới package/smoke/upload và tạo draft prerelease, không tự Publish release.
+Theo yêu cầu người dùng, test/lint chạy local; CI chỉ build web và launcher. Release không chạy lint/unit/E2E/native test, không cài Playwright và không buộc một lượt CI test thành công. Chỉ nhận workflow_dispatch trên main, đầu vào x.y.z khớp source, từ chối tag đã có, build/package/đối chiếu ZIP rồi tạo draft prerelease. Build job chỉ contents:read, draft job riêng contents:write. Cấu hình rút gọn hiện ở local, chưa commit/push/dispatch; không tự Publish release.
+
+verify-release.ps1 thêm -ArchiveOnly: kiểm tra checksum, tên và bytes của ZIP so với build rồi thoát trước bước kiểm tra cổng/giải nén/khởi động. Test fixture có exe giả vẫn pass ArchiveOnly (không khởi chạy), sau khi đổi dist/index.html thì bị từ chối. Script không kèm switch vẫn giữ smoke đầy đủ cho local. Đã chạy 84/84 test và build tại local sau thay đổi này.
 
 Năm test mới kiểm tra nguồn đồng nhất, đầu vào thiếu/v-prefix/leading zero/path/newline/shell-like, yêu cầu version chưa có trong source, launcher/API/frontend cũ và version source thật. Đã chạy CLI với 0.5.1 thành công, không tạo gói. Đã tải actionlint từ release chính thức và đối chiếu checksum trước khi kiểm tra YAML; công cụ tạm được dọn. Chi tiết thao tác tại RELEASE_WORKFLOW.md.
 

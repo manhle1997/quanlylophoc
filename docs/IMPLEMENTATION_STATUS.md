@@ -8,9 +8,9 @@ Theo yêu cầu mới: chỉ đóng gói khi người dùng yêu cầu rõ. Đã
 
 Repository đã được người dùng khởi tạo và push lên `https://github.com/manhle1997/quanlylophoc`, nhánh main, commit đầu `e8754d2`. Đã đối chiếu remote với workspace; không có data/release/build/.env được track. CI push/PR không đóng gói; lượt đầu 45776699651 đã hoàn tất thành công cả web và launcher.
 
-Đã chuẩn bị `.github/workflows/release.yml` trong workspace: chỉ workflow_dispatch trên main, kiểm tra version nguồn, build/test/native/E2E rồi mới đóng gói và smoke ZIP; tạo draft prerelease ở job riêng. Chưa commit/push các thay đổi mới này và chưa dispatch workflow hoặc tạo release/tag. Updater trong ứng dụng chưa triển khai. Hướng dẫn tại RELEASE_WORKFLOW.md.
+Theo yêu cầu mới, lint/test chạy tại local trước push. `ci.yml` chỉ build web và launcher, không cài Playwright hoặc chạy test; launcher job không cài Node/build lại web. `release.yml` chỉ workflow_dispatch trên main, kiểm tra version/tag, build, đóng gói và đối chiếu ZIP/checksum bằng -ArchiveOnly, không boot app hoặc chạy lại test. Tạo draft prerelease ở job riêng, không tự Publish. Cấu hình rút gọn đang ở workspace, chưa commit/push/dispatch. Updater trong ứng dụng chưa triển khai. Hướng dẫn tại RELEASE_WORKFLOW.md.
 
-Kiểm chứng phần workflow: actionlint 1.7.12 pass cả hai workflow; 84/84 Vitest, 12 file; lint/build/offline pass. Script version có 5 bài test, kiểm tra frontend/launcher/API/lock khớp và từ chối đầu vào không hợp lệ. Không chạy package:release thật trong workspace; ZIP/data hiện có giữ nguyên.
+Kiểm chứng phần workflow rút gọn: actionlint 1.7.12 pass cả hai workflow; PowerShell parser pass; local 84/84 Vitest, 12 file và build 71 modules pass. Fixture chứng minh -ArchiveOnly không chạy exe giả và từ chối ZIP khác build. Script version có 5 bài test bảo vệ version/đầu vào. Không chạy package:release thật trong workspace; ZIP/data hiện có giữ nguyên.
 
 ## Chức năng
 

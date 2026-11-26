@@ -50,19 +50,13 @@ jobs:
           if ($LASTEXITCODE -ne 1) { throw 'Could not verify existing tags.' }
           $global:LASTEXITCODE = 0
       - run: npm ci
-      - run: npm run lint
-      - run: npm run test
       - run: npm run build
-      - run: npm run verify:offline
       - run: dotnet publish launcher/ClassQuest.Launcher/ClassQuest.Launcher.csproj -c Release -r win-x64 --self-contained true -o build/launcher
-      - run: node scripts/test-launcher.mjs
-      - run: npx playwright install chromium
-      - run: npm run test:e2e
-      - name: Package only after all checks pass
+      - name: Package built application
         run: npm run package:release
-      - name: Verify archive bytes and extracted app
+      - name: Verify archive bytes without running application tests
         shell: powershell
-        run: ./scripts/verify-release.ps1
+        run: ./scripts/verify-release.ps1 -ArchiveOnly
       - name: Upload verified candidate
         uses: actions/upload-artifact@v4
         with:
@@ -72,12 +66,6 @@ jobs:
             release/${{ steps.version.outputs.zip_name }}.sha256
           if-no-files-found: error
           retention-days: 14
-      - uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: release-test-results
-          path: test-results/
-          if-no-files-found: ignore
 
   draft:
     needs: prepare
@@ -101,7 +89,7 @@ jobs:
         run: |
           printf '%s\n' \
             "Lớp Học Vui ${RELEASE_VERSION} — Windows x64 release candidate." \
-            'Gói đã qua build, kiểm thử và kiểm tra ZIP/khởi động sau giải nén.' \
+            'Gói đã build và đối chiếu nội dung ZIP với build. Kiểm thử chức năng được thực hiện tại local trước khi push.' \
             'Không chứa dữ liệu lớp, hồ sơ, ảnh hoặc backup của người dùng.' \
             'Giữ nguyên data/ khi nâng cấp. Chưa có chức năng tự cập nhật trong ứng dụng.' \
             'Đây là bản nháp. Chỉ công bố sau khi người phụ trách kiểm tra và chọn Publish release.' \

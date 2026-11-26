@@ -10,7 +10,7 @@ Bản Windows đã phát hành vẫn là `release/ClassQuest-0.5.0/ClassQuest/St
 
 Xem [tự lưu](docs/AUTOMATIC_STORAGE.md) và [điểm danh theo ngày](docs/DAILY_ATTENDANCE.md).
 
-Source đã có trên GitHub; CI push/PR chỉ build/test. Workflow tạo bản nháp Windows được chuẩn bị riêng, chỉ chạy qua Run workflow và không tự công bố. Xem [quy trình GitHub/phát hành thủ công](docs/RELEASE_WORKFLOW.md). Chưa có chức năng tự cập nhật trong ứng dụng.
+Source đã có trên GitHub; lint/test chạy tại local, CI push/PR chỉ build web và launcher. Workflow tạo bản nháp Windows chỉ chạy qua Run workflow: build, đóng gói, đối chiếu ZIP/checksum và không tự công bố; không chạy lại test trên GitHub. Xem [quy trình GitHub/phát hành thủ công](docs/RELEASE_WORKFLOW.md). Chưa có chức năng tự cập nhật trong ứng dụng.
 
 Bản 0.5.1 sửa việc tên học sinh đầu lớp luôn được ưu tiên hiển thị trong trò chơi. Thứ tự nhân vật/nhãn được xáo theo từng lượt trên cả 5 scene và 2D; không thay thứ tự danh sách lớp hoặc kết quả chọn theo ID.
 
