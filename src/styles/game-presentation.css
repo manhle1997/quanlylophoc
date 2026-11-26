@@ -1,0 +1,56 @@
+.game-screen[data-scene-id="fishing"] { --scene-accent: #9ce7c6; --scene-ink: #164c43; --scene-paper: #f1fff5; }
+.game-screen[data-scene-id="ufo"] { --scene-accent: #bdb5ff; --scene-ink: #3d3471; --scene-paper: #f5f2ff; }
+.game-screen[data-scene-id="claw"] { --scene-accent: #ffbdd2; --scene-ink: #763d56; --scene-paper: #fff2f5; }
+.game-screen[data-scene-id="marble"] { --scene-accent: #c8b7ff; --scene-ink: #514075; --scene-paper: #f7f2ff; }
+.game-screen[data-scene-id="treasure"] { --scene-accent: #f3d392; --scene-ink: #70501f; --scene-paper: #fff9e9; }
+.character-speech { position: absolute; z-index: 2; width: min(310px, calc(100% - 32px)); padding: 14px 18px 16px; border: 1px solid var(--scene-accent, #b8e8d3); border-bottom: 3px solid var(--scene-accent, #b8e8d3); border-radius: 16px 16px 16px 4px; background: var(--scene-paper, #f1fff5); color: var(--scene-ink, #164c43); transform: translate(-50%, -100%); box-shadow: 0 8px 24px #091b2540; text-align: left; overflow-wrap: anywhere; pointer-events: none; }
+.character-speech::after { content: ""; position: absolute; left: var(--speech-tail, 32px); bottom: -11px; border-top: 12px solid var(--scene-accent, #b8e8d3); border-right: 11px solid transparent; }
+.speech-name { display: block; margin-bottom: 5px; font-size: .75rem; font-weight: 600; line-height: 1.4; }
+.speech-line { color: var(--scene-ink, #164c43); font-size: 1rem; font-weight: 600; line-height: 1.5; }
+.speech-enter { animation: speech-arrive 180ms ease-out; }
+.speech-slot { min-height: 106px; display: grid; place-items: center; width: 100%; margin: 8px 0 20px; }
+.inline-speech { position: relative; left: auto; top: auto; transform: none; }
+.game-screen .game-hud .brand-mark { background: #14252bdf; color: var(--scene-accent); border-color: #ffffff30; border-radius: 10px; }
+.game-screen .game-hud { background: linear-gradient(180deg, #101d2cf5 0%, #101d2ce8 80%, #101d2c00 100%); }
+.game-screen .game-hud-title small { color: #d9e2ea; }
+.game-screen .game-controls { background: linear-gradient(0deg, #101d2cf8 0%, #101d2cef 80%, #101d2c00 100%); }
+.game-screen .game-phase .icon { color: var(--scene-accent); }
+.game-screen .game-controls .button { border-color: #ffffff35; color: #f3f4fa; background: #16202ad9; backdrop-filter: none; }
+.game-screen .game-controls .button:hover { background: #263b47; border-color: var(--scene-accent); }
+.game-screen .game-hud .icon-button { color: #f2f4fa; }
+.game-screen .game-hud .icon-button:hover { background: #ffffff1a; color: var(--scene-accent); }
+.game-journey { position: absolute; z-index: 3; left: 32px; right: 32px; bottom: 86px; height: 3px; background: #ffffff25; pointer-events: none; }
+.game-journey-fill { display: block; height: 100%; width: 100%; transform-origin: left; transform: scaleX(var(--journey-progress, 0)); background: var(--scene-accent); }
+.game-journey-marker { position: absolute; top: -3px; width: 9px; height: 9px; border-radius: 50%; background: #233b45; border: 1px solid #cbdedb; }
+.game-journey-marker.passed { background: var(--scene-accent); border-color: var(--scene-accent); }
+.game-journey-end { right: 0; }
+.game-screen .game-phase { min-width: 0; max-width: 52%; }
+.game-screen .game-phase-text { line-height: 1.5; }
+.fallback-scene { padding: 92px 24px 115px; }
+.fallback-art { max-height: 33vh; width: min(620px, 65vw); display: flex; align-items: center; justify-content: center; animation-duration: 6s; }
+.fallback-art svg { max-height: 33vh; }
+.fallback-bubbles { opacity: .8; gap: 8px; }
+.fallback-bubbles > span { color: #e4ecf3; background: #192c3d80; border-color: #cedfea30; }
+.fallback-caption { margin: 6px 0 16px; }
+.fallback-focus { min-height: 0; }
+@keyframes speech-arrive { from { opacity: 0; translate: 0 7px; } to { opacity: 1; translate: 0 0; } }
+@media (max-width: 760px) {
+  .game-screen .game-hud { padding: 16px; gap: 12px; }
+  .game-screen .game-hud-actions { gap: 4px; }
+  .game-screen .game-controls { padding: 16px; gap: 10px; }
+  .game-screen .game-controls .row-actions { width: 100%; justify-content: space-between; gap: 8px; }
+  .game-screen .game-phase { max-width: 100%; }
+  .game-journey { left: 16px; right: 16px; bottom: 116px; }
+  .speech-line { font-size: .9375rem; }
+  .character-speech { padding: 12px 15px; }
+  .fallback-scene { padding: 92px 16px 140px; }
+  .fallback-art { width: 94vw; max-height: 29vh; }
+  .fallback-art svg { max-height: 29vh; }
+  .fallback-badge { bottom: 128px; font-size: .5625rem; letter-spacing: 1px; }
+  .fallback-bubbles { max-width: 100%; gap: 5px; }
+  .fallback-bubbles > span:nth-child(n+5) { display: none; }
+  .fallback-bubbles > span { font-size: .625rem; padding: 5px 8px; }
+  .speech-slot { min-height: 100px; margin: 8px 0 20px; }
+}
+@media (max-height: 620px) and (min-width: 761px) { .fallback-art, .fallback-art svg { max-height: 27vh; } .speech-slot { min-height: 90px; margin: 0; } .speech-line { font-size: .875rem; } .fallback-caption { font-size: .75rem; margin-bottom: 9px; } .fallback-bubbles > span { padding: 5px 8px; font-size: .6875rem; } }
+@media (prefers-reduced-motion: reduce) { .speech-enter { animation: none; } }

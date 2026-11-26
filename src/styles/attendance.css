@@ -1,0 +1,59 @@
+﻿.attendance-filters { display: flex; align-items: center; gap: 24px; padding: 18px 20px; margin-bottom: 22px; }
+.attendance-filters .field { margin: 0; min-width: 190px; }
+.attendance-record-status { display: flex; align-items: center; gap: 8px; color: #7f5f26; font-size: .8125rem; margin-left: auto; }
+.attendance-record-status .icon { width: 17px; height: 17px; }
+.attendance-record-status.recorded { color: var(--accent); }
+.attendance-stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin-bottom: 22px; border: 1px solid var(--line); background: var(--panel); border-radius: 8px; }
+.attendance-stat.panel { display: flex; flex-direction: column; gap: 12px; border: 0; border-right: 1px solid var(--line); border-radius: 0; padding: 20px 24px; background: none; }
+.attendance-stat.panel:last-child { border-right: 0; }
+.attendance-stat span { font-size: .8125rem; color: var(--muted); }
+.attendance-stat strong { font-size: 1.875rem; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.1; letter-spacing: -.6px; }
+.attendance-stat.present strong { color: #286448; }
+.attendance-stat.late strong { color: #8a5b18; }
+.attendance-stat.excused strong { color: #46667b; }
+.attendance-stat.absent strong { color: #a23d3d; }
+.attendance-toolbar { display: flex; justify-content: space-between; gap: 20px; align-items: center; margin-bottom: 20px; }
+.attendance-toolbar h2 { font-size: 1rem; }
+.attendance-toolbar p { font-size: .8125rem; margin-top: 6px; }
+.attendance-search { max-width: 360px; }
+.attendance-table th:first-child, .attendance-table td:first-child { padding-left: 14px; }
+.attendance-table td:last-child, .attendance-table th:last-child { text-align: left; }
+.attendance-table td.student-name { min-width: 180px; }
+.attendance-status { border: 1px solid var(--control-border); border-radius: 5px; padding: 8px 32px 8px 12px; font-size: .8125rem; min-width: 180px; background-color: var(--panel); min-height: 36px; }
+.attendance-status.present { color: #2c6448; }
+.attendance-status.late { color: #855718; }
+.attendance-status.excused { color: #415f78; }
+.attendance-status.absent { color: #9b3a3a; }
+.attendance-history { margin-top: 22px; }
+.attendance-history .section-heading { margin-top: 0; }
+.attendance-days { display: flex; gap: 10px; flex-wrap: wrap; }
+.attendance-day { display: flex; flex-direction: column; gap: 6px; text-align: left; border: 1px solid var(--control-border); background: var(--panel); border-radius: 5px; padding: 12px 15px; color: var(--text); }
+.attendance-day:hover { background: var(--panel-light); }
+.attendance-day strong { font-weight: 600; font-size: .8125rem; font-variant-numeric: tabular-nums; }
+.attendance-day span { font-size: .75rem; color: var(--muted); }
+.attendance-day.active { border-color: var(--accent); background: var(--accent-wash); }
+.call-attendance-note { font-size: .8125rem; color: #725523; background: #f6efdf; border-left: 3px solid #a27c37; padding: 11px 14px; margin: 14px 0 0; }
+@media (max-width: 1100px) {
+  .attendance-filters { gap: 16px; flex-wrap: wrap; }
+  .attendance-filters .field { min-width: 155px; }
+  .attendance-record-status { font-size: .75rem; margin-left: 0; }
+  .attendance-stat.panel { padding: 18px 16px; }
+  .attendance-stat span { font-size: .75rem; }
+}
+@media (max-width: 700px) {
+  .attendance-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .attendance-stat.panel { padding: 16px 20px; }
+  .attendance-stat.total { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; padding: 14px 20px; }
+  .attendance-stat.panel:nth-child(odd) { border-right: 0; }
+  .attendance-stat.panel:nth-child(n+2) { border-top: 1px solid var(--line); }
+  .attendance-stat span { font-size: .8125rem; }
+  .attendance-toolbar { flex-wrap: wrap; }
+  .attendance-toolbar .button { width: 100%; }
+  .attendance-filters { padding: 16px; }
+  .attendance-filters .field { flex: 1; min-width: 135px; }
+  .attendance-status { min-width: 165px; }
+  .attendance-table { min-width: 440px; }
+  .attendance-history { padding: 20px 16px; }
+  .attendance-history .section-heading { flex-wrap: wrap; }
+  .attendance-history .section-heading > span { font-size: .6875rem; }
+}

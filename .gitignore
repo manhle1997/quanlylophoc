@@ -1,0 +1,13 @@
+node_modules/
+dist/
+build/
+release/
+data/
+backups/
+test-results/
+playwright-report/
+launcher/**/bin/
+launcher/**/obj/
+*.user
+.env*
+.cache/

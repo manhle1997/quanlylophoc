@@ -1,0 +1,11 @@
+import './styles/tokens.css';
+import './styles/base.css';
+import './styles/layout.css';
+import './styles/components.css';
+import './styles/roster.css';
+import './styles/games.css';
+import './styles/attendance.css';
+import './styles/profile.css';
+import './styles/game-presentation.css';
+import { App } from './app.js';
+new App(document.querySelector('#app'));

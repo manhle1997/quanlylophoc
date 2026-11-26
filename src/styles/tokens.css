@@ -1,0 +1,43 @@
+﻿:root {
+  color-scheme: light;
+  --bg: #f3f4ef;
+  --sidebar: #183b33;
+  --panel: #ffffff;
+  --panel-light: #f7f8f4;
+  --line: #dce1d9;
+  --control-border: #819188;
+  --text: #202d27;
+  --muted: #626f66;
+  --soft: #4f5e54;
+  --accent: #275f4d;
+  --accent-dark: #1c483a;
+  --accent-wash: #eaf1e9;
+  --teal: #275f4d;
+  --action-bg: #275f4d;
+  --action-text: #ffffff;
+  --action-hover: #1b4839;
+  --danger: #a33737;
+  --radius: 8px;
+  --sidebar-width: 236px;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-synthesis: none;
+  font-size: 16px;
+}
+
+/* The classroom scenes retain their own cinematic palette. */
+.game-screen {
+  color-scheme: dark;
+  color: var(--text);
+  --bg: #10121e;
+  --panel: #1b1e2d;
+  --panel-light: #222535;
+  --line: #3d4055;
+  --text: #f0f0f9;
+  --muted: #b0b3ca;
+  --soft: #c2c5d8;
+  --accent: #c3aaff;
+  --accent-wash: #3e3357;
+  --action-bg: #b49af6;
+  --action-text: #241b3b;
+  --action-hover: #c4adff;
+}

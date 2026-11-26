@@ -1,0 +1,21 @@
+import { test, expect } from './fixtures.js';
+test('roster: create class, paste preview, preserve duplicate IDs and session attendance', async ({ page }) => {
+  const errors = []; page.on('pageerror', e => errors.push(e.message));
+  await page.goto('/'); await page.getByRole('button', { name: 'Chơi thử', exact: true }).click();
+  await page.getByRole('button', { name: 'Quản lý học sinh' }).click();
+  await page.getByRole('button', { name: 'Tạo lớp', exact: true }).click();
+  await page.getByLabel('Tên lớp', { exact: true }).fill('Lớp kiểm thử giả');
+  await page.getByRole('dialog').getByRole('button', { name: 'Tạo lớp', exact: true }).click();
+  await page.getByRole('button', { name: 'Nhập hàng loạt' }).click();
+  const names = Array.from({ length: 40 }, (_, i) => i < 2 ? 'Mây Trùng Tên' : `Nhân vật giả ${i}`);
+  await page.getByRole('textbox', { name: 'Mỗi dòng một họ và tên' }).fill(names.join('\n'));
+  await page.getByRole('button', { name: 'Xem trước danh sách' }).click();
+  await expect(page.getByText('40 học sinh · 1 dòng trùng tên.', { exact: false })).toBeVisible();
+  await page.getByRole('button', { name: 'Xác nhận nhập danh sách' }).click();
+  await expect(page.locator('.roster-table tbody tr')).toHaveCount(40);
+  await expect(page.getByText('Mây Trùng Tên (01)', { exact: true })).toBeVisible();
+  await expect(page.getByText('Mây Trùng Tên (02)', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Trạng thái học tập: Mây Trùng Tên (01)', exact: true }).click();
+  await expect(page.locator('.save-status')).toHaveText('Đang chơi thử');
+  expect(errors).toEqual([]);
+});
